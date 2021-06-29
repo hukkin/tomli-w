@@ -46,6 +46,8 @@ def write_table(table: Dict[str, Any], *, name: str) -> str:
         output += f"{format_key_part(k)} = {write_literal(v)}\n"
 
     for k, v in tables:
+        if output:
+            output += "\n"
         output += write_table(
             v, name=name + "." + format_key_part(k) if name else format_key_part(k)
         )
