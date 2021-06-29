@@ -39,7 +39,7 @@ def write_table(table: Dict[str, Any], *, name: str) -> str:
 
     output = ""
 
-    if name:
+    if name and (literals or not tables):
         output += f"[{name}]\n"
 
     for k, v in literals:

@@ -23,3 +23,9 @@ val3 = 3
 
 def test_empty_doc():
     assert tomli_dumps.dumps({}) == ""
+
+
+def test_dont_write_redundant_tables():
+    actual = tomli_dumps.dumps({"tab1": {"tab2": {"tab3": {}}}})
+    expected = "[tab1.tab2.tab3]\n"
+    assert actual == expected
