@@ -2,7 +2,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import TextIO
+from typing import Any, Dict, TextIO
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -20,15 +20,15 @@ COMPACT_ESCAPES = MappingProxyType(
 )
 
 
-def dump(obj: dict, fp: TextIO) -> None:
+def dump(obj: Dict[str, Any], fp: TextIO) -> None:
     raise NotImplementedError
 
 
-def dumps(obj: dict) -> str:
+def dumps(obj: Dict[str, Any]) -> str:
     return write_table(obj, name="")
 
 
-def write_table(table: dict, *, name: str) -> str:
+def write_table(table: Dict[str, Any], *, name: str) -> str:
     literals = []
     tables = []
     for k, v in table.items():

@@ -93,6 +93,8 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     # Scripts
     'if __name__ == .__main__.:',
+    # Unfinished implementations
+    'raise NotImplementedError',
 ]
 
 
