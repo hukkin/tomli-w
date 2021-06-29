@@ -1,6 +1,6 @@
 # Changelog
 
-## **unreleased**
+## 0.0.1
 
 - Added
-  - TODO:
+  - `tomli_dumps.dumps`
