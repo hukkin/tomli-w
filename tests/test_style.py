@@ -19,3 +19,7 @@ val3 = 3
 [table.nested]
 """
     assert actual == expected
+
+
+def test_empty_doc():
+    assert tomli_dumps.dumps({}) == ""
