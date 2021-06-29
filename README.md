@@ -10,6 +10,11 @@
 
 <!-- mdformat-toc start --slug=github --maxlevel=6 --minlevel=2 -->
 
+- [Intro](#intro)
+- [Installation](#installation)
+
+<!-- mdformat-toc end -->
+
 ## Intro<a name="intro"></a>
 
 _Tomli dumps_ is a Python library for writing [TOML](https://toml.io).

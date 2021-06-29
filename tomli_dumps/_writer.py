@@ -1,8 +1,8 @@
-from typing import TextIO
-from types import MappingProxyType
+from datetime import date, datetime, time
 from decimal import Decimal
-from datetime import datetime, date, time
 import string
+from types import MappingProxyType
+from typing import TextIO
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -46,12 +46,14 @@ def write_table(table: dict, *, name: str) -> str:
         output += f"{format_key_part(k)} = {write_literal(v)}\n"
 
     for k, v in tables:
-        output += write_table(v, name=name + "." + format_key_part(k) if name else format_key_part(k))
+        output += write_table(
+            v, name=name + "." + format_key_part(k) if name else format_key_part(k)
+        )
 
     return output
 
 
-def write_literal(obj, *, nest_level: int = 0) -> str:
+def write_literal(obj: object, *, nest_level: int = 0) -> str:
     if isinstance(obj, bool):
         return "true" if obj else "false"
     if isinstance(obj, (int, float, Decimal, time, date, datetime)):
@@ -63,7 +65,11 @@ def write_literal(obj, *, nest_level: int = 0) -> str:
             return "[]"
         lst_str = "[\n"
         for item in obj:
-            lst_str += "    " * (1 + nest_level) + write_literal(item, nest_level=nest_level + 1) + ",\n"
+            lst_str += (
+                "    " * (1 + nest_level)
+                + write_literal(item, nest_level=nest_level + 1)
+                + ",\n"
+            )
         return lst_str + "    " * nest_level + "]"
     if isinstance(obj, dict):
         if not obj:

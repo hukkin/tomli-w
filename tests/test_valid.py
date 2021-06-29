@@ -1,18 +1,19 @@
-from pathlib import Path
-from typing import Union
 from decimal import Decimal
 from math import isnan
+from pathlib import Path
+from typing import Union
 
 import pytest
 import tomli
 
 import tomli_dumps
 
-
 COMPLIANCE_DIR = Path(__file__).parent / "data" / "toml-lang-compliance" / "valid"
 EXTRAS_DIR = Path(__file__).parent / "data" / "extras" / "valid"
 
-VALID_FILES = tuple(COMPLIANCE_DIR.glob("**/*.toml")) + tuple(EXTRAS_DIR.glob("**/*.toml"))
+VALID_FILES = tuple(COMPLIANCE_DIR.glob("**/*.toml")) + tuple(
+    EXTRAS_DIR.glob("**/*.toml")
+)
 
 
 @pytest.mark.parametrize(
@@ -34,7 +35,8 @@ NAN = object()
 
 
 def replace_nans(cont: Union[dict, list]) -> Union[dict, list]:
-    """Replace NaNs with a sentinel object to fix the problem that NaN is not equal to another NaN."""
+    """Replace NaNs with a sentinel object to fix the problem that NaN is not
+    equal to another NaN."""
     for k, v in cont.items() if isinstance(cont, dict) else enumerate(cont):
         if isinstance(v, (float, Decimal)) and isnan(v):
             cont[k] = NAN
