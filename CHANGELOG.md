@@ -2,6 +2,8 @@
 
 ## **unreleased**
 
+- Fix
+  - Raise an error on offset time
 - Style
   - Omit redundant table headers
 

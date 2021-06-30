@@ -7,6 +7,7 @@ from typing import Any, Dict, TextIO
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
+ARRAY_INDENT = " " * 4
 
 COMPACT_ESCAPES = MappingProxyType(
     {
@@ -58,29 +59,37 @@ def write_table(table: Dict[str, Any], *, name: str) -> str:
 def write_literal(obj: object, *, nest_level: int = 0) -> str:
     if isinstance(obj, bool):
         return "true" if obj else "false"
-    if isinstance(obj, (int, float, Decimal, time, date, datetime)):
+    if isinstance(obj, (int, float, Decimal, date, datetime)):
+        return str(obj)
+    if isinstance(obj, time):
+        if obj.tzinfo:
+            raise ValueError("TOML does not support offset times")
         return str(obj)
     if isinstance(obj, str):
         return format_string(obj, allow_multiline=False)
     if isinstance(obj, list):
         if not obj:
             return "[]"
-        lst_str = "[\n"
-        for item in obj:
-            lst_str += (
-                "    " * (1 + nest_level)
-                + write_literal(item, nest_level=nest_level + 1)
-                + ",\n"
+        item_indent = ARRAY_INDENT * (1 + nest_level)
+        closing_bracket_indent = ARRAY_INDENT * nest_level
+        return (
+            "[\n"
+            + ",\n".join(
+                item_indent + write_literal(item, nest_level=nest_level + 1)
+                for item in obj
             )
-        return lst_str + "    " * nest_level + "]"
+            + f",\n{closing_bracket_indent}]"
+        )
     if isinstance(obj, dict):
         if not obj:
             return "{}"
-        dct_str = "{ "
-        for k, v in obj.items():
-            dct_str += f"{format_key_part(k)} = {write_literal(v)}, "
-        dct_str = dct_str[:-2] + " }"
-        return dct_str
+        return (
+            "{ "
+            + ", ".join(
+                f"{format_key_part(k)} = {write_literal(v)}" for k, v in obj.items()
+            )
+            + " }"
+        )
     raise TypeError(f"Object of type {type(obj)} is not TOML serializable")
 
 
