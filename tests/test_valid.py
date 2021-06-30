@@ -6,7 +6,7 @@ from typing import Union
 import pytest
 import tomli
 
-import tomli_dumps
+import tomli_w
 
 COMPLIANCE_DIR = Path(__file__).parent / "data" / "toml-lang-compliance" / "valid"
 EXTRAS_DIR = Path(__file__).parent / "data" / "extras" / "valid"
@@ -26,7 +26,7 @@ def test_valid(valid):
         pytest.xfail("This much recursion is not supported")
     original_str = valid.read_text(encoding="utf-8")
     original_data = tomli.loads(original_str)
-    dump_str = tomli_dumps.dumps(original_data)
+    dump_str = tomli_w.dumps(original_data)
     after_dump_data = tomli.loads(dump_str)
     assert replace_nans(after_dump_data) == replace_nans(original_data)
 

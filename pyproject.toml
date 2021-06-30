@@ -3,7 +3,7 @@ requires = ["flit_core>=3.2.0,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "tomli_dumps"
+name = "tomli_w"
 version = "0.0.1"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 description = "A lil' TOML writer"
 authors = [
@@ -29,8 +29,8 @@ classifiers = [
 keywords = ["toml", "tomli"]
 
 [project.urls]
-"Homepage" = "https://github.com/hukkin/tomli-dumps"
-"Changelog" = "https://github.com/hukkin/tomli-dumps/blob/master/CHANGELOG.md"
+"Homepage" = "https://github.com/hukkin/tomli-w"
+"Changelog" = "https://github.com/hukkin/tomli-w/blob/master/CHANGELOG.md"
 
 
 [tool.flit.sdist]
@@ -48,7 +48,7 @@ force_sort_within_sections = true
 no_lines_before = ["LOCALFOLDER"]
 
 # Configure isort to work without access to site-packages
-known_first_party = ["tomli-dumps", "tests"]
+known_first_party = ["tomli_w", "tests"]
 
 # Settings for Black compatibility
 profile = "black"
