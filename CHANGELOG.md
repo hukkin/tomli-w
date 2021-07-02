@@ -2,6 +2,8 @@
 
 ## **unreleased**
 
+- Added
+  - `tomli_w.dump`
 - Changed
   - Format strings containing line breaks and that are longer than threshold value as multiline strings
 

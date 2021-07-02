@@ -26,7 +26,8 @@ COMPACT_ESCAPES = MappingProxyType(
 
 
 def dump(obj: Dict[str, Any], fp: TextIO) -> None:
-    raise NotImplementedError
+    s = dumps(obj)
+    fp.write(s)
 
 
 def dumps(obj: Dict[str, Any]) -> str:
