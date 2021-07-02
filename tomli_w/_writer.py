@@ -4,6 +4,10 @@ import string
 from types import MappingProxyType
 from typing import Any, Dict, TextIO
 
+# Strings this long or longer that contain line breaks will be formatted
+# as multiline strings
+MULTILINE_STR_THRESHOLD = 70
+
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
@@ -66,7 +70,7 @@ def write_literal(obj: object, *, nest_level: int = 0) -> str:
             raise ValueError("TOML does not support offset times")
         return str(obj)
     if isinstance(obj, str):
-        return format_string(obj, allow_multiline=False)
+        return format_string(obj, allow_multiline=True)
     if isinstance(obj, list):
         if not obj:
             return "[]"
@@ -100,21 +104,31 @@ def format_key_part(part: str) -> str:
 
 
 def format_string(s: str, *, allow_multiline: bool = False) -> str:
-    if allow_multiline:
-        # TODO: If there are line breaks, make a multiline string.
-        #       Make sure this is not used for keys.
-        raise NotImplementedError
     result = '"'
+
+    # If there are line breaks and the string is longer than threshold,
+    # make a multiline string instead.
+    do_multiline = allow_multiline and "\n" in s and len(s) >= MULTILINE_STR_THRESHOLD
+    if do_multiline:
+        result += '""\n'
+        s = s.replace("\r\n", "\n")
+
     pos = seq_start = 0
     while True:
         try:
             char = s[pos]
         except IndexError:
-            return result + s[seq_start:pos] + '"'
+            result += s[seq_start:pos]
+            if do_multiline:
+                return result + '"""'
+            return result + '"'
         if char in ILLEGAL_BASIC_STR_CHARS:
             result += s[seq_start:pos]
             if char in COMPACT_ESCAPES:
-                result += COMPACT_ESCAPES[char]
+                if do_multiline and char == "\n":
+                    result += "\n"
+                else:
+                    result += COMPACT_ESCAPES[char]
             else:
                 result += "\\u" + hex(ord(char))[2:].rjust(4, "0")
             seq_start = pos + 1
