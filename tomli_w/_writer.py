@@ -56,6 +56,8 @@ def gen_table_chunks(table: Dict[str, Any], *, name: str) -> Generator[str, None
     for k, v in tables:
         if yielded:
             yield "\n"
+        else:
+            yielded = True
         yield from gen_table_chunks(
             v, name=name + "." + format_key_part(k) if name else format_key_part(k)
         )

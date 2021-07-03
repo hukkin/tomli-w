@@ -41,3 +41,13 @@ This is longer than threshold!
 Should be formatted as a multiline basic string"""
 '''
     assert actual == expected
+
+
+def test_only_tables():
+    actual = tomli_w.dumps({"tab1": {}, "tab2": {}})
+    expected = """\
+[tab1]
+
+[tab2]
+"""
+    assert actual == expected
