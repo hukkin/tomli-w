@@ -2,7 +2,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import Any, Dict, TextIO
+from typing import Any, Dict, Generator, TextIO
 
 # Strings this long or longer that contain line breaks will be formatted
 # as multiline strings
@@ -26,15 +26,16 @@ COMPACT_ESCAPES = MappingProxyType(
 
 
 def dump(obj: Dict[str, Any], fp: TextIO) -> None:
-    s = dumps(obj)
-    fp.write(s)
+    for chunk in gen_table_chunks(obj, name=""):
+        fp.write(chunk)
 
 
 def dumps(obj: Dict[str, Any]) -> str:
-    return write_table(obj, name="")
+    return "".join(gen_table_chunks(obj, name=""))
 
 
-def write_table(table: Dict[str, Any], *, name: str) -> str:
+def gen_table_chunks(table: Dict[str, Any], *, name: str) -> Generator[str, None, None]:
+    yielded = False
     literals = []
     tables = []
     for k, v in table.items():
@@ -43,25 +44,24 @@ def write_table(table: Dict[str, Any], *, name: str) -> str:
         else:
             literals.append((k, v))
 
-    output = ""
-
     if name and (literals or not tables):
-        output += f"[{name}]\n"
+        yielded = True
+        yield f"[{name}]\n"
 
-    for k, v in literals:
-        output += f"{format_key_part(k)} = {write_literal(v)}\n"
+    if literals:
+        yielded = True
+        for k, v in literals:
+            yield f"{format_key_part(k)} = {format_literal(v)}\n"
 
     for k, v in tables:
-        if output:
-            output += "\n"
-        output += write_table(
+        if yielded:
+            yield "\n"
+        yield from gen_table_chunks(
             v, name=name + "." + format_key_part(k) if name else format_key_part(k)
         )
 
-    return output
 
-
-def write_literal(obj: object, *, nest_level: int = 0) -> str:
+def format_literal(obj: object, *, nest_level: int = 0) -> str:
     if isinstance(obj, bool):
         return "true" if obj else "false"
     if isinstance(obj, (int, float, Decimal, date, datetime)):
@@ -80,7 +80,7 @@ def write_literal(obj: object, *, nest_level: int = 0) -> str:
         return (
             "[\n"
             + ",\n".join(
-                item_indent + write_literal(item, nest_level=nest_level + 1)
+                item_indent + format_literal(item, nest_level=nest_level + 1)
                 for item in obj
             )
             + f",\n{closing_bracket_indent}]"
@@ -91,7 +91,7 @@ def write_literal(obj: object, *, nest_level: int = 0) -> str:
         return (
             "{ "
             + ", ".join(
-                f"{format_key_part(k)} = {write_literal(v)}" for k, v in obj.items()
+                f"{format_key_part(k)} = {format_literal(v)}" for k, v in obj.items()
             )
             + " }"
         )
