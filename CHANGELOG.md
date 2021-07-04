@@ -1,6 +1,6 @@
 # Changelog
 
-## **unreleased**
+## 0.2.0
 
 - Added
   - `tomli_w.dump`
