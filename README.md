@@ -13,6 +13,8 @@
 - [Intro](#intro)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Write to string](#write-to-string)
+  - [Write to file](#write-to-file)
 - [FAQ](#faq)
   - [Does Tomli-W sort the document?](#does-tomli-w-sort-the-document)
   - [Does Tomli-W support writing documents with comments, custom whitespace, or other stylistic choices?](#does-tomli-w-support-writing-documents-with-comments-custom-whitespace-or-other-stylistic-choices)
@@ -34,6 +36,8 @@ pip install tomli-w
 
 ## Usage<a name="usage"></a>
 
+### Write to string<a name="write-to-string"></a>
+
 ```python
 import tomli_w
 
@@ -48,6 +52,16 @@ val3 = 3
 [table.nested]
 """
 assert tomli_w.dumps(doc) == expected_toml
+```
+
+### Write to file<a name="write-to-file"></a>
+
+```python
+import tomli_w
+
+doc = {"one": 1, "two": 2, "pi": 3}
+with open("path_to_file/conf.toml", "w", encoding="utf-8") as f:
+    tomli_w.dump(doc, f)
 ```
 
 ## FAQ<a name="faq"></a>
