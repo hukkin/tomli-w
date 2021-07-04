@@ -51,3 +51,21 @@ def test_only_tables():
 [tab2]
 """
     assert actual == expected
+
+
+def test_tricky_keys():
+    actual = tomli_w.dumps({"f": 1, "tab1": {}, "": {"f": 2, "": {"": 1}}, "tab3": {}})
+    expected = """\
+f = 1
+
+[tab1]
+
+[""]
+f = 2
+
+["".""]
+"" = 1
+
+[tab3]
+"""
+    assert actual == expected
