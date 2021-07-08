@@ -59,7 +59,7 @@ def gen_table_chunks(table: Dict[str, Any], *, name: str) -> Generator[str, None
         else:
             yielded = True
         yield from gen_table_chunks(
-            v, name=name + "." + format_key_part(k) if name else format_key_part(k)
+            v, name=f"{name}.{format_key_part(k)}" if name else format_key_part(k)
         )
 
 
@@ -107,14 +107,14 @@ def format_key_part(part: str) -> str:
 
 
 def format_string(s: str, *, allow_multiline: bool = False) -> str:
-    result = '"'
-
     # If there are line breaks and the string is longer than threshold,
     # make a multiline string instead.
     do_multiline = allow_multiline and "\n" in s and len(s) >= MULTILINE_STR_THRESHOLD
     if do_multiline:
-        result += '""\n'
+        result = '"""\n'
         s = s.replace("\r\n", "\n")
+    else:
+        result = '"'
 
     pos = seq_start = 0
     while True:

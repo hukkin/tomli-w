@@ -36,6 +36,7 @@ keywords = ["toml", "tomli"]
 [tool.flit.sdist]
 exclude = [
     "tests/",
+    "benchmark/",
     ".*",
     "CHANGELOG.md",
 ]
@@ -77,6 +78,26 @@ description = run linters
 skip_install = True
 deps = pre-commit
 commands = pre-commit run {posargs:--all}
+
+[testenv:benchmark]
+description = run the benchmark script against a local Tomli-W version
+deps =
+    -r benchmark/requirements.txt
+commands =
+    python -c 'import datetime; print(datetime.date.today())'
+    python --version
+    python benchmark/run.py
+
+[testenv:benchmark-pypi]
+description = run the benchmark script against the latest Tomli-W in PyPI
+skip_install = True
+deps =
+    tomli-w
+    -r benchmark/requirements.txt
+commands =
+    python -c 'import datetime; print(datetime.date.today())'
+    python --version
+    python benchmark/run.py
 '''
 
 
@@ -115,3 +136,9 @@ no_implicit_optional = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+# This matches `benchmark/run.py`. Since benchmark/ is
+# not a package, we use the module name here.
+module = "run"
+ignore_errors = true
