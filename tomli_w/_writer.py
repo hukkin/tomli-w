@@ -2,7 +2,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import Any, Dict, Generator, TextIO
+from typing import Any, Dict, Generator, Mapping, TextIO
 
 # Strings this long or longer that contain line breaks will be formatted
 # as multiline strings
@@ -34,7 +34,9 @@ def dumps(obj: Dict[str, Any]) -> str:
     return "".join(gen_table_chunks(obj, name=""))
 
 
-def gen_table_chunks(table: Dict[str, Any], *, name: str) -> Generator[str, None, None]:
+def gen_table_chunks(
+    table: Mapping[str, Any], *, name: str
+) -> Generator[str, None, None]:
     yielded = False
     literals = []
     tables = []

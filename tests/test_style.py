@@ -69,3 +69,23 @@ f = 2
 [tab3]
 """
     assert actual == expected
+
+
+def test_nested_keys():
+    actual = tomli_w.dumps(
+        {
+            "k": 1,
+            "a": {"b": {"c": {"d": {"e": {"f": {}}, "e2": {"f2": {}}}, "d_key1": 1}}},
+        }
+    )
+    expected = """\
+k = 1
+
+[a.b.c]
+d_key1 = 1
+
+[a.b.c.d.e.f]
+
+[a.b.c.d.e2.f2]
+"""
+    assert actual == expected
