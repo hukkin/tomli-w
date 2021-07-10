@@ -4,10 +4,6 @@ import string
 from types import MappingProxyType
 from typing import Any, Dict, Generator, Mapping, TextIO
 
-# Strings this long or longer that contain line breaks will be formatted
-# as multiline strings
-MULTILINE_STR_THRESHOLD = 70
-
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
@@ -109,9 +105,8 @@ def format_key_part(part: str) -> str:
 
 
 def format_string(s: str, *, allow_multiline: bool = False) -> str:
-    # If there are line breaks and the string is longer than threshold,
-    # make a multiline string instead.
-    do_multiline = allow_multiline and "\n" in s and len(s) >= MULTILINE_STR_THRESHOLD
+    # If there are line breaks, make a multiline string instead.
+    do_multiline = allow_multiline and "\n" in s
     if do_multiline:
         result = '"""\n'
         s = s.replace("\r\n", "\n")
