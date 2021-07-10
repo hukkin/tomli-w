@@ -98,6 +98,17 @@ commands =
     python -c 'import datetime; print(datetime.date.today())'
     python --version
     python benchmark/run.py
+
+[testenv:profile]
+description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
+setenv =
+    PROFILER_ITERATIONS=1000
+deps =
+    -r tests/requirements.txt
+    pytest-profiling
+commands =
+    pytest tests/test_for_profiler.py --profile-svg --pstats-dir "{toxworkdir}/prof"
+    python -c 'import pathlib; print("profiler svg output under file://\{0\}".format(pathlib.Path(r"{toxworkdir}") / "prof" / "combined.svg"))'
 '''
 
 

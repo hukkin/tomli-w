@@ -6,4 +6,8 @@ pytomlpp
 toml
 tomlkit
 qtoml
-rtoml
+# comment out TOML v1.0.0 incompatible rtoml
+#rtoml
+
+# for reading data.toml
+tomli
