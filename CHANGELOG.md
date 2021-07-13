@@ -1,6 +1,6 @@
 # Changelog
 
-## **unreleased**
+## 0.2.2
 
 - Added
   - `multiline_strings` keyword argument for enabling multi-line strings
