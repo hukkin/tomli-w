@@ -2,7 +2,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import Any, Dict, Generator, Mapping, TextIO
+from typing import Any, Dict, Generator, Mapping, NamedTuple, TextIO
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -21,17 +21,23 @@ COMPACT_ESCAPES = MappingProxyType(
 )
 
 
-def dump(obj: Dict[str, Any], fp: TextIO) -> None:
-    for chunk in gen_table_chunks(obj, name=""):
+def dump(obj: Dict[str, Any], fp: TextIO, *, multiline_strings: bool = False) -> None:
+    opts = Opts(multiline_strings)
+    for chunk in gen_table_chunks(obj, opts, name=""):
         fp.write(chunk)
 
 
-def dumps(obj: Dict[str, Any]) -> str:
-    return "".join(gen_table_chunks(obj, name=""))
+def dumps(obj: Dict[str, Any], *, multiline_strings: bool = False) -> str:
+    opts = Opts(multiline_strings)
+    return "".join(gen_table_chunks(obj, opts, name=""))
+
+
+class Opts(NamedTuple):
+    allow_multiline: bool
 
 
 def gen_table_chunks(
-    table: Mapping[str, Any], *, name: str
+    table: Mapping[str, Any], opts: Opts, *, name: str
 ) -> Generator[str, None, None]:
     yielded = False
     literals = []
@@ -49,7 +55,7 @@ def gen_table_chunks(
     if literals:
         yielded = True
         for k, v in literals:
-            yield f"{format_key_part(k)} = {format_literal(v)}\n"
+            yield f"{format_key_part(k)} = {format_literal(v, opts)}\n"
 
     for k, v in tables:
         if yielded:
@@ -57,11 +63,11 @@ def gen_table_chunks(
         else:
             yielded = True
         yield from gen_table_chunks(
-            v, name=f"{name}.{format_key_part(k)}" if name else format_key_part(k)
+            v, opts, name=f"{name}.{format_key_part(k)}" if name else format_key_part(k)
         )
 
 
-def format_literal(obj: object, *, nest_level: int = 0) -> str:
+def format_literal(obj: object, opts: Opts, *, nest_level: int = 0) -> str:
     if isinstance(obj, bool):
         return "true" if obj else "false"
     if isinstance(obj, (int, float, Decimal, date, datetime)):
@@ -71,7 +77,7 @@ def format_literal(obj: object, *, nest_level: int = 0) -> str:
             raise ValueError("TOML does not support offset times")
         return str(obj)
     if isinstance(obj, str):
-        return format_string(obj, allow_multiline=True)
+        return format_string(obj, allow_multiline=opts.allow_multiline)
     if isinstance(obj, list):
         if not obj:
             return "[]"
@@ -80,7 +86,7 @@ def format_literal(obj: object, *, nest_level: int = 0) -> str:
         return (
             "[\n"
             + ",\n".join(
-                item_indent + format_literal(item, nest_level=nest_level + 1)
+                item_indent + format_literal(item, opts, nest_level=nest_level + 1)
                 for item in obj
             )
             + f",\n{closing_bracket_indent}]"
@@ -91,7 +97,8 @@ def format_literal(obj: object, *, nest_level: int = 0) -> str:
         return (
             "{ "
             + ", ".join(
-                f"{format_key_part(k)} = {format_literal(v)}" for k, v in obj.items()
+                f"{format_key_part(k)} = {format_literal(v, opts)}"
+                for k, v in obj.items()
             )
             + " }"
         )
@@ -104,8 +111,7 @@ def format_key_part(part: str) -> str:
     return format_string(part, allow_multiline=False)
 
 
-def format_string(s: str, *, allow_multiline: bool = False) -> str:
-    # If there are line breaks, make a multiline string instead.
+def format_string(s: str, *, allow_multiline: bool) -> str:
     do_multiline = allow_multiline and "\n" in s
     if do_multiline:
         result = '"""\n'

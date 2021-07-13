@@ -34,7 +34,7 @@ def test_multiline():
         "This is longer than threshold!\n"
         "Should be formatted as a multiline basic string"
     )
-    actual = tomli_w.dumps({"ml_string": multiline_string})
+    actual = tomli_w.dumps({"ml_string": multiline_string}, multiline_strings=True)
     expected = '''\
 ml_string = """
 This is longer than threshold!
