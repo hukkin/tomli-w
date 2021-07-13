@@ -77,7 +77,7 @@ def format_literal(obj: object, opts: Opts, *, nest_level: int = 0) -> str:
             raise ValueError("TOML does not support offset times")
         return str(obj)
     if isinstance(obj, str):
-        return format_string(obj, opts)
+        return format_string(obj, allow_multiline=opts.allow_multiline)
     if isinstance(obj, list):
         if not obj:
             return "[]"
@@ -108,11 +108,11 @@ def format_literal(obj: object, opts: Opts, *, nest_level: int = 0) -> str:
 def format_key_part(part: str) -> str:
     if part and BARE_KEY_CHARS.issuperset(part):
         return part
-    return format_string(part, Opts(False))
+    return format_string(part, allow_multiline=False)
 
 
-def format_string(s: str, opts: Opts) -> str:
-    do_multiline = opts.allow_multiline and "\n" in s
+def format_string(s: str, *, allow_multiline: bool) -> str:
+    do_multiline = allow_multiline and "\n" in s
     if do_multiline:
         result = '"""\n'
         s = s.replace("\r\n", "\n")
