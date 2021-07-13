@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "tomli_w"
-version = "0.2.1"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
+version = "0.2.2"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 description = "A lil' TOML writer"
 authors = [
     { name = "Taneli Hukkinen", email = "hukkin@users.noreply.github.com" },
@@ -70,10 +70,17 @@ envlist = py{36,37,38,39}
 isolated_build = True
 
 [testenv:py{36,37,38,39}]
-description = run tests
+description = run tests against unpackaged source
+skip_install = True
 deps = -r tests/requirements.txt
 commands =
     pytest {posargs}
+
+[testenv:py{36,37,38,39}-package]
+description = run tests against a built package
+deps = -r tests/requirements.txt
+commands =
+    pytest --import-mode=append {posargs}
 
 [testenv:pre-commit]
 description = run linters
@@ -103,6 +110,7 @@ commands =
 
 [testenv:profile]
 description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
+skip_install = True
 setenv =
     PROFILER_ITERATIONS=1000
 deps =
