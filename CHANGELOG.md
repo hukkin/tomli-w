@@ -1,9 +1,16 @@
 # Changelog
 
+## **unreleased**
+
+- Added
+  - `multiline_strings` keyword argument for enabling multi-line strings
+- Changed
+  - Style: Do not make multi-line strings by default because they don't support lossless round-tripping
+
 ## 0.2.1
 
 - Changed
-  - Style: Decide between multi line and single line string solely based on if line breaks are present
+  - Style: Decide between multi-line and single line string solely based on if line breaks are present
 
 ## 0.2.0
 
