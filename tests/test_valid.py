@@ -24,7 +24,7 @@ VALID_FILES = tuple(COMPLIANCE_DIR.glob("**/*.toml")) + tuple(
 def test_valid(valid):
     if valid.stem in {"qa-array-inline-nested-1000", "qa-table-inline-nested-1000"}:
         pytest.xfail("This much recursion is not supported")
-    original_str = valid.read_text(encoding="utf-8")
+    original_str = valid.read_bytes().decode()
     original_data = tomli.loads(original_str)
     dump_str = tomli_w.dumps(original_data)
     after_dump_data = tomli.loads(dump_str)

@@ -14,7 +14,7 @@ import tomli
 import tomli_w
 
 path = Path(__file__).parent.parent / "benchmark" / "data.toml"
-benchmark_toml = path.read_text("utf-8")
+benchmark_toml = path.read_bytes().decode()
 data = tomli.loads(benchmark_toml)
 
 

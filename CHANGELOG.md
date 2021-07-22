@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- Changed
+  - `dump` now supports binary file objects instead of text file objects
+
 ## 0.2.2
 
 - Added
