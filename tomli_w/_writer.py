@@ -2,7 +2,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import Any, Dict, Generator, Mapping, NamedTuple, TextIO
+from typing import Any, BinaryIO, Dict, Generator, Mapping, NamedTuple
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -21,10 +21,10 @@ COMPACT_ESCAPES = MappingProxyType(
 )
 
 
-def dump(obj: Dict[str, Any], fp: TextIO, *, multiline_strings: bool = False) -> None:
+def dump(obj: Dict[str, Any], fp: BinaryIO, *, multiline_strings: bool = False) -> None:
     opts = Opts(multiline_strings)
     for chunk in gen_table_chunks(obj, opts, name=""):
-        fp.write(chunk)
+        fp.write(chunk.encode())
 
 
 def dumps(obj: Dict[str, Any], *, multiline_strings: bool = False) -> str:

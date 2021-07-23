@@ -60,7 +60,7 @@ assert tomli_w.dumps(doc) == expected_toml
 import tomli_w
 
 doc = {"one": 1, "two": 2, "pi": 3}
-with open("path_to_file/conf.toml", "w", encoding="utf-8") as f:
+with open("path_to_file/conf.toml", "wb") as f:
     tomli_w.dump(doc, f)
 ```
 

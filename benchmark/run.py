@@ -15,7 +15,7 @@ import tomlkit
 import tomli_w
 
 test_data_file = Path(__file__).parent / "data.toml"
-test_data = tomli.loads(test_data_file.read_text(encoding="utf-8"))
+test_data = tomli.loads(test_data_file.read_bytes().decode())
 # Make the game fair for tomlkit by converting `test_data` to a
 # tomlkit native type before measurements.
 tomlkit_test_data = tomlkit.item(test_data)
