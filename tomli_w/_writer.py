@@ -112,10 +112,11 @@ def format_key_part(part: str) -> str:
 
 
 def format_string(s: str, *, allow_multiline: bool) -> str:
-    do_multiline = allow_multiline and "\n" in s
+    do_multiline = allow_multiline and ("\n" in s or "\r" in s)
     if do_multiline:
         result = '"""\n'
-        s = s.replace("\r\n", "\n")
+        # Normalize all newlines (LF, CR, CRLF) to an LF
+        s = s.replace("\r\n", "\n").replace("\r", "\n")
     else:
         result = '"'
 
