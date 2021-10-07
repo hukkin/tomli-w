@@ -18,6 +18,7 @@
 - [FAQ](#faq)
   - [Does Tomli-W sort the document?](#does-tomli-w-sort-the-document)
   - [Does Tomli-W support writing documents with comments, custom whitespace, or other stylistic choices?](#does-tomli-w-support-writing-documents-with-comments-custom-whitespace-or-other-stylistic-choices)
+  - [Why does Tomli-W not write a multiline string if the string value contains newlines?](#why-does-tomli-w-not-write-a-multiline-string-if-the-string-value-contains-newlines)
 
 <!-- mdformat-toc end -->
 
@@ -74,3 +75,22 @@ so one could sort the content of the `dict` (recursively) before calling `tomli_
 ### Does Tomli-W support writing documents with comments, custom whitespace, or other stylistic choices?<a name="does-tomli-w-support-writing-documents-with-comments-custom-whitespace-or-other-stylistic-choices"></a>
 
 No.
+
+### Why does Tomli-W not write a multiline string if the string value contains newlines?<a name="why-does-tomli-w-not-write-a-multiline-string-if-the-string-value-contains-newlines"></a>
+
+This default was chosen to achieve lossless parse/write roundtripping.
+
+TOML strings can contain newlines where exact byte representation is not relevant, e.g.
+
+```toml
+s = """here's a newline
+"""
+```
+
+TOML strings can also contain newlines where exact bytes are important, e.g.
+
+```toml
+s = "here's a newline\r\n"
+```
+
+A parse/write roundtrip that converts the latter example to the former does not preserve the original newline byte sequence.
