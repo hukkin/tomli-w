@@ -69,8 +69,7 @@ jobs:
 
   pypi-publish:
     # Only publish if all other jobs succeed
-    needs:
-    - allgood
+    needs: [ allgood ]
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:
@@ -78,12 +77,16 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: '3.7'
-    - name: Install Flit
+    - name: Install build and publish tools
       run: |
-        pip install "flit==3.3.0"
-    - name: Build and publish
+        pip install build twine
+    - name: Build and check
       run: |
-        flit publish --no-setup-py
+        rm -rf dist/ && python -m build
+        twine check dist/*
+    - name: Publish
+      run: |
+        twine upload dist/*
       env:
-        FLIT_USERNAME: __token__
-        FLIT_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
