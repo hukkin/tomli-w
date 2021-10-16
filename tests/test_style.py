@@ -1,3 +1,5 @@
+import tomli
+
 import tomli_w
 
 
@@ -104,6 +106,7 @@ a = [
 """
     actual = tomli_w.dumps(example)
     assert actual == expected
+    assert tomli.loads(actual) == example
 
     example = {"a": {"nested": example}}
     expected = """\
@@ -139,6 +142,7 @@ simple-value = 3
 """
     actual = tomli_w.dumps(example)
     assert actual == expected
+    assert tomli.loads(actual) == example
 
 
 def test_array_of_short_tables():
@@ -184,3 +188,55 @@ c = 3
 """
     actual = tomli_w.dumps(example)
     assert actual == expected
+    assert tomli.loads(actual) == example
+
+
+def test_non_trivial_nesting():
+    long = {
+        "long-value": "Lorem ipsum dolor sit amet",
+        "another-long-value": "consectetur adipiscing elit",
+        "a-third-one": "sed do eiusmod tempor incididunt ut labore et dolore magna",
+        "simple-value": 3,
+    }
+    example = {
+        "table": {
+            "aot": [
+                {"nested-table": {"nested_aot": [{"a": [0, 1]}, {"b": 2}, {"c": 3}]}},
+                {"other-nested-table": {"d": 4, "e": 5, "f": [{"g": 6}], "h": [long]}},
+            ]
+        }
+    }
+
+    expected = """\
+[[table.aot]]
+
+[[table.aot.nested-table.nested_aot]]
+a = [
+    0,
+    1,
+]
+
+[[table.aot.nested-table.nested_aot]]
+b = 2
+
+[[table.aot.nested-table.nested_aot]]
+c = 3
+
+[[table.aot]]
+
+[table.aot.other-nested-table]
+d = 4
+e = 5
+f = [
+    { g = 6 },
+]
+
+[[table.aot.other-nested-table.h]]
+long-value = "Lorem ipsum dolor sit amet"
+another-long-value = "consectetur adipiscing elit"
+a-third-one = "sed do eiusmod tempor incididunt ut labore et dolore magna"
+simple-value = 3
+"""
+    actual = tomli_w.dumps(example)
+    assert actual == expected
+    assert tomli.loads(actual) == example

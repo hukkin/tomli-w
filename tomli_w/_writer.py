@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from datetime import date, datetime, time
 from decimal import Decimal
 import string
@@ -56,7 +55,7 @@ def gen_table_chunks(
         else:
             literals.append((k, v))
 
-    if name and (literals or not tables):
+    if name and ((literals or not tables) or inside_aot):
         yielded = True
         yield (f"[[{name}]]\n" if inside_aot else f"[{name}]\n")
 
@@ -154,7 +153,7 @@ def is_aot(obj: Any) -> bool:
 
     See: https://toml.io/en/v1.0.0#array-of-tables.
     """
-    return isinstance(obj, Sequence) and all(isinstance(v, dict) for v in obj)
+    return isinstance(obj, (list, tuple)) and all(isinstance(v, dict) for v in obj)
 
 
 def is_suitable_inline_table(name: str, obj: dict) -> bool:
@@ -164,7 +163,11 @@ def is_suitable_inline_table(name: str, obj: dict) -> bool:
     For example, the spec strongly discourages inline tables that
     contain line breaks. See: https://toml.io/en/v1.0.0#inline-table
     """
-    if any(isinstance(v, (list, tuple)) for v in obj.values()):
+    if any(
+        isinstance(v, (list, tuple))
+        or (isinstance(v, dict) and not is_suitable_inline_table(k, v))
+        for k, v in obj.items()
+    ):
         # tomli-w will automatically introduce line breaks when converting lists
         return False
     # In the following line we use `repr(obj)` as an approximation for the
