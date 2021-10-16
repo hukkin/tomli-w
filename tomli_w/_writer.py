@@ -55,7 +55,7 @@ def gen_table_chunks(
         else:
             literals.append((k, v))
 
-    if name and ((literals or not tables) or inside_aot):
+    if name and (literals or not tables or inside_aot):
         yielded = True
         yield (f"[[{name}]]\n" if inside_aot else f"[{name}]\n")
 
