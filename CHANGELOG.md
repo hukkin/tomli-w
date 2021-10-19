@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- Changed
+  - A list of dicts is now rendered using the "Array of Tables" syntax,
+    but only if none of the tables is a nested structure,
+    and at least one of the tables would need a line wider than 100 chars to be rendered inline.
+    Thank you [Anderson Bravalheri](https://github.com/abravalheri) for the PR.
+
 ## 0.3.0
 
 - Changed
