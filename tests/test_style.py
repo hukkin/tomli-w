@@ -191,6 +191,18 @@ c = 3
     assert tomli.loads(actual) == example
 
 
+def test_table_with_empty_array():
+    # Empty arrays should never be AoTs
+    example: dict = {"table": {"array": []}}
+    expected = """\
+[table]
+array = []
+"""
+    actual = tomli_w.dumps(example)
+    assert actual == expected
+    assert tomli.loads(actual) == example
+
+
 def test_non_trivial_nesting():
     long = {
         "long-value": "Lorem ipsum dolor sit amet",
