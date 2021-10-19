@@ -50,12 +50,12 @@ def gen_table_chunks(
     for k, v in table.items():
         if isinstance(v, dict):
             tables.append((k, v, False))
-        elif is_aot(v) and not all(is_suitable_inline_table(k, t) for t in v):
+        elif is_aot(v) and any(not is_suitable_inline_table(k, t) for t in v):
             tables.extend((k, t, True) for t in v)
         else:
             literals.append((k, v))
 
-    if name and (literals or not tables or inside_aot):
+    if inside_aot or name and (literals or not tables):
         yielded = True
         yield (f"[[{name}]]\n" if inside_aot else f"[{name}]\n")
 
@@ -153,7 +153,7 @@ def is_aot(obj: Any) -> bool:
 
     See: https://toml.io/en/v1.0.0#array-of-tables.
     """
-    return isinstance(obj, (list, tuple)) and all(isinstance(v, dict) for v in obj)
+    return isinstance(obj, list) and obj and all(isinstance(v, dict) for v in obj)
 
 
 def is_suitable_inline_table(name: str, obj: dict) -> bool:
@@ -164,7 +164,7 @@ def is_suitable_inline_table(name: str, obj: dict) -> bool:
     contain line breaks. See: https://toml.io/en/v1.0.0#inline-table
     """
     if any(
-        isinstance(v, (list, tuple))
+        isinstance(v, list)
         or (isinstance(v, dict) and not is_suitable_inline_table(k, v))
         for k, v in obj.items()
     ):
@@ -173,4 +173,4 @@ def is_suitable_inline_table(name: str, obj: dict) -> bool:
     # In the following line we use `repr(obj)` as an approximation for the
     # TOML representation of an inline-table when `obj` is a dict,
     # (for the purposes of roughly estimating the line length)
-    return len(f"{name} = {obj!r}") < LONG_LINE_HEURISTIC
+    return len(repr(obj}) < LONG_LINE_HEURISTIC
