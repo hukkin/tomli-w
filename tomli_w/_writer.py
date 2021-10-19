@@ -50,7 +50,7 @@ def gen_table_chunks(
     for k, v in table.items():
         if isinstance(v, dict):
             tables.append((k, v, False))
-        elif is_aot(v) and not all(is_suitable_inline_table(k, t) for t in v):
+        elif is_aot(v) and not all(is_suitable_inline_table(t) for t in v):
             tables.extend((k, t, True) for t in v)
         else:
             literals.append((k, v))
@@ -156,14 +156,14 @@ def is_aot(obj: Any) -> bool:
     return bool(isinstance(obj, list) and obj and all(isinstance(v, dict) for v in obj))
 
 
-def is_suitable_inline_table(name: str, obj: dict) -> bool:
+def is_suitable_inline_table(obj: dict) -> bool:
     """Uses heuristics to decide if the inline-style representation is a good
     choice for a given dict.
 
     For example, the spec strongly discourages inline tables that
     contain line breaks. See: https://toml.io/en/v1.0.0#inline-table
     """
-    if any(isinstance(v, (list, dict)) for k, v in obj.items()):
+    if any(isinstance(v, (list, dict)) for v in obj.values()):
         # tomli-w will automatically introduce line breaks when converting lists
         # we also prefer to not have nested inline tables
         return False
