@@ -153,7 +153,7 @@ def is_aot(obj: Any) -> bool:
 
     See: https://toml.io/en/v1.0.0#array-of-tables.
     """
-    return isinstance(obj, list) and obj and all(isinstance(v, dict) for v in obj)
+    return bool(isinstance(obj, list) and obj and all(isinstance(v, dict) for v in obj))
 
 
 def is_suitable_inline_table(name: str, obj: dict) -> bool:
