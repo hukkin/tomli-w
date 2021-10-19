@@ -2,6 +2,10 @@
 
 ## 0.4.0
 
+- Added
+  - Support for formatting Python `tuple`s as TOML arrays.
+- Fixed
+  - Formatting of `decimal.Decimal("inf")`, `decimal.Decimal("-inf")` and `decimal.Decimal("nan")`.
 - Changed
   - A list of dicts is now rendered using the "Array of Tables" syntax,
     but only if none of the tables is a nested structure,
