@@ -163,12 +163,9 @@ def is_suitable_inline_table(name: str, obj: dict) -> bool:
     For example, the spec strongly discourages inline tables that
     contain line breaks. See: https://toml.io/en/v1.0.0#inline-table
     """
-    if any(
-        isinstance(v, list)
-        or (isinstance(v, dict) and not is_suitable_inline_table(k, v))
-        for k, v in obj.items()
-    ):
+    if any(isinstance(v, (list, dict)) for k, v in obj.items()):
         # tomli-w will automatically introduce line breaks when converting lists
+        # we also prefer to not have nested inline tables
         return False
     # In the following line we use `repr(obj)` as an approximation for the
     # TOML representation of an inline-table when `obj` is a dict,
