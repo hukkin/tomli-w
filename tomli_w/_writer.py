@@ -199,4 +199,4 @@ def is_suitable_inline_table(obj: dict, opts: Opts) -> bool:
         # Tomli-W will automatically introduce line breaks when converting lists.
         # It also prefers to not have nested inline tables.
         return False
-    return len(f"{ARRAY_INDENT}{format_literal(obj, opts)},") <= MAX_LINE_LENGTH
+    return len(f"{ARRAY_INDENT}{format_inline_table(obj, opts)},") <= MAX_LINE_LENGTH
