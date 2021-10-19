@@ -7,8 +7,12 @@ from typing import Any, BinaryIO, Dict, Generator, List, Mapping, NamedTuple, Tu
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
-ARRAY_INDENT = " " * 4
+INDENT_LENGTH = 4
+ARRAY_INDENT = " " * INDENT_LENGTH
 LONG_LINE_HEURISTIC = 100
+"""100 is an intermediary number between 80 and 120 (two popular choices
+for line length in style guides from programming languages).
+"""
 
 COMPACT_ESCAPES = MappingProxyType(
     {
@@ -50,7 +54,7 @@ def gen_table_chunks(
     for k, v in table.items():
         if isinstance(v, dict):
             tables.append((k, v, False))
-        elif is_aot(v) and not all(is_suitable_inline_table(t) for t in v):
+        elif is_aot(v) and not all(is_suitable_inline_table(t, opts) for t in v):
             tables.extend((k, t, True) for t in v)
         else:
             literals.append((k, v))
@@ -156,7 +160,7 @@ def is_aot(obj: Any) -> bool:
     return bool(isinstance(obj, list) and obj and all(isinstance(v, dict) for v in obj))
 
 
-def is_suitable_inline_table(obj: dict) -> bool:
+def is_suitable_inline_table(obj: dict, opts: Opts, *, nest_level: int = 1) -> bool:
     """Uses heuristics to decide if the inline-style representation is a good
     choice for a given dict.
 
@@ -167,7 +171,5 @@ def is_suitable_inline_table(obj: dict) -> bool:
         # tomli-w will automatically introduce line breaks when converting lists
         # we also prefer to not have nested inline tables
         return False
-    # In the following line we use `repr(obj)` as an approximation for the
-    # TOML representation of an inline-table when `obj` is a dict,
-    # (for the purposes of roughly estimating the line length)
-    return len(repr(obj)) < LONG_LINE_HEURISTIC
+    max_len = LONG_LINE_HEURISTIC - (INDENT_LENGTH * nest_level)
+    return len(format_literal(obj, opts)) < max_len
