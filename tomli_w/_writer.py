@@ -173,4 +173,4 @@ def is_suitable_inline_table(name: str, obj: dict) -> bool:
     # In the following line we use `repr(obj)` as an approximation for the
     # TOML representation of an inline-table when `obj` is a dict,
     # (for the purposes of roughly estimating the line length)
-    return len(repr(obj}) < LONG_LINE_HEURISTIC
+    return len(repr(obj)) < LONG_LINE_HEURISTIC
