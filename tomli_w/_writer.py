@@ -7,11 +7,8 @@ from typing import Any, BinaryIO, Dict, Generator, List, Mapping, NamedTuple, Tu
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
-INDENT_LENGTH = 4
-ARRAY_INDENT = " " * INDENT_LENGTH
-# 100 is an intermediary number between 80 and 120 (two popular choices
-# for line length in style guides from programming languages).
-LONG_LINE_HEURISTIC = 100
+ARRAY_INDENT = " " * 4
+MAX_LINE_LENGTH = 100
 
 COMPACT_ESCAPES = MappingProxyType(
     {
@@ -60,7 +57,7 @@ def gen_table_chunks(
 
     if inside_aot or name and (literals or not tables):
         yielded = True
-        yield (f"[[{name}]]\n" if inside_aot else f"[{name}]\n")
+        yield f"[[{name}]]\n" if inside_aot else f"[{name}]\n"
 
     if literals:
         yielded = True
@@ -159,7 +156,7 @@ def is_aot(obj: Any) -> bool:
     return bool(isinstance(obj, list) and obj and all(isinstance(v, dict) for v in obj))
 
 
-def is_suitable_inline_table(obj: dict, opts: Opts, *, nest_level: int = 1) -> bool:
+def is_suitable_inline_table(obj: dict, opts: Opts) -> bool:
     """Uses heuristics to decide if the inline-style representation is a good
     choice for a given dict.
 
@@ -167,8 +164,7 @@ def is_suitable_inline_table(obj: dict, opts: Opts, *, nest_level: int = 1) -> b
     contain line breaks. See: https://toml.io/en/v1.0.0#inline-table
     """
     if any(isinstance(v, (list, dict)) for v in obj.values()):
-        # tomli-w will automatically introduce line breaks when converting lists
-        # we also prefer to not have nested inline tables
+        # Tomli-W will automatically introduce line breaks when converting lists.
+        # It also prefers to not have nested inline tables.
         return False
-    max_len = LONG_LINE_HEURISTIC - (INDENT_LENGTH * nest_level)
-    return len(format_literal(obj, opts)) < max_len
+    return len(f"{ARRAY_INDENT}{format_literal(obj, opts)},") <= MAX_LINE_LENGTH
