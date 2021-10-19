@@ -2,12 +2,16 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import Any, BinaryIO, Dict, Generator, Mapping, NamedTuple
+from typing import Any, BinaryIO, Dict, Generator, List, Mapping, NamedTuple, Tuple
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
-ARRAY_INDENT = " " * 4
+INDENT_LENGTH = 4
+ARRAY_INDENT = " " * INDENT_LENGTH
+# 100 is an intermediary number between 80 and 120 (two popular choices
+# for line length in style guides from programming languages).
+LONG_LINE_HEURISTIC = 100
 
 COMPACT_ESCAPES = MappingProxyType(
     {
@@ -37,34 +41,40 @@ class Opts(NamedTuple):
 
 
 def gen_table_chunks(
-    table: Mapping[str, Any], opts: Opts, *, name: str
+    table: Mapping[str, Any],
+    opts: Opts,
+    *,
+    name: str,
+    inside_aot: bool = False,
 ) -> Generator[str, None, None]:
     yielded = False
     literals = []
-    tables = []
+    tables: List[Tuple[str, Any, bool]] = []  # => [(key, value, inside_aot)]
     for k, v in table.items():
         if isinstance(v, dict):
-            tables.append((k, v))
+            tables.append((k, v, False))
+        elif is_aot(v) and not all(is_suitable_inline_table(t, opts) for t in v):
+            tables.extend((k, t, True) for t in v)
         else:
             literals.append((k, v))
 
-    if name and (literals or not tables):
+    if inside_aot or name and (literals or not tables):
         yielded = True
-        yield f"[{name}]\n"
+        yield (f"[[{name}]]\n" if inside_aot else f"[{name}]\n")
 
     if literals:
         yielded = True
         for k, v in literals:
             yield f"{format_key_part(k)} = {format_literal(v, opts)}\n"
 
-    for k, v in tables:
+    for k, v, in_aot in tables:
         if yielded:
             yield "\n"
         else:
             yielded = True
-        yield from gen_table_chunks(
-            v, opts, name=f"{name}.{format_key_part(k)}" if name else format_key_part(k)
-        )
+        key_part = format_key_part(k)
+        display_name = f"{name}.{key_part}" if name else key_part
+        yield from gen_table_chunks(v, opts, name=display_name, inside_aot=in_aot)
 
 
 def format_literal(obj: object, opts: Opts, *, nest_level: int = 0) -> str:
@@ -139,3 +149,26 @@ def format_string(s: str, *, allow_multiline: bool) -> str:
                 result += "\\u" + hex(ord(char))[2:].rjust(4, "0")
             seq_start = pos + 1
         pos += 1
+
+
+def is_aot(obj: Any) -> bool:
+    """Decides if object behaves as an array of tables (i.e. list of dicts).
+
+    See: https://toml.io/en/v1.0.0#array-of-tables.
+    """
+    return bool(isinstance(obj, list) and obj and all(isinstance(v, dict) for v in obj))
+
+
+def is_suitable_inline_table(obj: dict, opts: Opts, *, nest_level: int = 1) -> bool:
+    """Uses heuristics to decide if the inline-style representation is a good
+    choice for a given dict.
+
+    For example, the spec strongly discourages inline tables that
+    contain line breaks. See: https://toml.io/en/v1.0.0#inline-table
+    """
+    if any(isinstance(v, (list, dict)) for v in obj.values()):
+        # tomli-w will automatically introduce line breaks when converting lists
+        # we also prefer to not have nested inline tables
+        return False
+    max_len = LONG_LINE_HEURISTIC - (INDENT_LENGTH * nest_level)
+    return len(format_literal(obj, opts)) < max_len
