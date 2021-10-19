@@ -50,7 +50,7 @@ def gen_table_chunks(
     for k, v in table.items():
         if isinstance(v, dict):
             tables.append((k, v, False))
-        elif is_aot(v) and any(not is_suitable_inline_table(k, t) for t in v):
+        elif is_aot(v) and not all(is_suitable_inline_table(k, t) for t in v):
             tables.extend((k, t, True) for t in v)
         else:
             literals.append((k, v))
