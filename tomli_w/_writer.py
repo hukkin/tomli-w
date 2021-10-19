@@ -9,10 +9,9 @@ ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
 INDENT_LENGTH = 4
 ARRAY_INDENT = " " * INDENT_LENGTH
+# 100 is an intermediary number between 80 and 120 (two popular choices
+# for line length in style guides from programming languages).
 LONG_LINE_HEURISTIC = 100
-"""100 is an intermediary number between 80 and 120 (two popular choices
-for line length in style guides from programming languages).
-"""
 
 COMPACT_ESCAPES = MappingProxyType(
     {
