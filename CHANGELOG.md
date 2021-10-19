@@ -7,9 +7,9 @@
 - Fixed
   - Formatting of `decimal.Decimal("inf")`, `decimal.Decimal("-inf")` and `decimal.Decimal("nan")`.
 - Changed
-  - A list of dicts is now rendered using the "Array of Tables" syntax,
-    but only if none of the tables is a nested structure,
-    and at least one of the tables would need a line wider than 100 chars to be rendered inline.
+  - A list of dicts is now rendered using the "Array of Tables" syntax
+    if at least one of the tables is a nested structure,
+    or at least one of the tables would need a line wider than 100 chars when rendered inline.
     Thank you [Anderson Bravalheri](https://github.com/abravalheri) for the
     [PR](https://github.com/hukkin/tomli-w/pull/15).
 
