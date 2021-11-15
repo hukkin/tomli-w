@@ -1,18 +1,11 @@
+from __future__ import annotations
+
+from collections.abc import Generator, Mapping
 from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import (
-    Any,
-    BinaryIO,
-    Dict,
-    Generator,
-    List,
-    Mapping,
-    NamedTuple,
-    Tuple,
-    Union,
-)
+from typing import Any, BinaryIO, NamedTuple
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -33,13 +26,13 @@ COMPACT_ESCAPES = MappingProxyType(
 )
 
 
-def dump(obj: Dict[str, Any], fp: BinaryIO, *, multiline_strings: bool = False) -> None:
+def dump(obj: dict[str, Any], fp: BinaryIO, *, multiline_strings: bool = False) -> None:
     opts = Opts(multiline_strings)
     for chunk in gen_table_chunks(obj, opts, name=""):
         fp.write(chunk.encode())
 
 
-def dumps(obj: Dict[str, Any], *, multiline_strings: bool = False) -> str:
+def dumps(obj: dict[str, Any], *, multiline_strings: bool = False) -> str:
     opts = Opts(multiline_strings)
     return "".join(gen_table_chunks(obj, opts, name=""))
 
@@ -57,7 +50,7 @@ def gen_table_chunks(
 ) -> Generator[str, None, None]:
     yielded = False
     literals = []
-    tables: List[Tuple[str, Any, bool]] = []  # => [(key, value, inside_aot)]
+    tables: list[tuple[str, Any, bool]] = []  # => [(key, value, inside_aot)]
     for k, v in table.items():
         if isinstance(v, dict):
             tables.append((k, v, False))
@@ -127,7 +120,7 @@ def format_inline_table(obj: dict, opts: Opts) -> str:
     )
 
 
-def format_inline_array(obj: Union[tuple, list], opts: Opts, nest_level: int) -> str:
+def format_inline_array(obj: tuple | list, opts: Opts, nest_level: int) -> str:
     if not obj:
         return "[]"
     item_indent = ARRAY_INDENT * (1 + nest_level)

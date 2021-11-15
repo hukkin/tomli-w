@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0 (unreleased)
+
+- Removed
+  - Support for Python 3.6
+
 ## 0.4.0
 
 - Added
