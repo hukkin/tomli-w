@@ -26,15 +26,17 @@ COMPACT_ESCAPES = MappingProxyType(
 )
 
 
-def dump(obj: dict[str, Any], fp: BinaryIO, *, multiline_strings: bool = False) -> None:
+def dump(
+    __obj: dict[str, Any], __fp: BinaryIO, *, multiline_strings: bool = False
+) -> None:
     opts = Opts(multiline_strings)
-    for chunk in gen_table_chunks(obj, opts, name=""):
-        fp.write(chunk.encode())
+    for chunk in gen_table_chunks(__obj, opts, name=""):
+        __fp.write(chunk.encode())
 
 
-def dumps(obj: dict[str, Any], *, multiline_strings: bool = False) -> str:
+def dumps(__obj: dict[str, Any], *, multiline_strings: bool = False) -> str:
     opts = Opts(multiline_strings)
-    return "".join(gen_table_chunks(obj, opts, name=""))
+    return "".join(gen_table_chunks(__obj, opts, name=""))
 
 
 class Opts(NamedTuple):
