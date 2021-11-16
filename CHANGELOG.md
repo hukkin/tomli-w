@@ -4,6 +4,7 @@
 
 - Removed
   - Support for Python 3.6
+  - Positional arguments of `dump` and `dumps` can no longer be passed by keyword.
 
 ## 0.4.0
 
