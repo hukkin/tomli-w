@@ -34,15 +34,6 @@ keywords = ["toml", "tomli"]
 "Changelog" = "https://github.com/hukkin/tomli-w/blob/master/CHANGELOG.md"
 
 
-[tool.flit.sdist]
-exclude = [
-    "tests/",
-    "benchmark/",
-    ".*",
-    "CHANGELOG.md",
-]
-
-
 [tool.isort]
 # Force imports to be sorted by module, independent of import type
 force_sort_within_sections = true
