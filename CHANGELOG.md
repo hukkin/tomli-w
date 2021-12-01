@@ -5,6 +5,10 @@
 - Removed
   - Support for Python 3.6
   - Positional arguments of `dump` and `dumps` can no longer be passed by keyword.
+- Changed
+  - Revised logic for when the "Array of Tables" syntax will be used.
+    AoT syntax is used when at least one of the tables needs multiple lines, or a single line wider than 100 chars, when rendered inline.
+    A nested structure no longer alone triggers the AoT syntax.
 
 ## 0.4.0
 

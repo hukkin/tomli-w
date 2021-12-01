@@ -251,3 +251,24 @@ simple-value = 3
     actual = tomli_w.dumps(example)
     assert actual == expected
     assert tomli.loads(actual) == example
+
+
+def test_multiline_in_aot():
+    data = {"aot": [{"multiline_string": "line1\nline2"}]}
+    assert (
+        tomli_w.dumps(data, multiline_strings=True)
+        == '''\
+[[aot]]
+multiline_string = """
+line1
+line2"""
+'''
+    )
+    assert (
+        tomli_w.dumps(data, multiline_strings=False)
+        == """\
+aot = [
+    { multiline_string = "line1\\nline2" },
+]
+"""
+    )

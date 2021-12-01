@@ -29,23 +29,25 @@ COMPACT_ESCAPES = MappingProxyType(
 def dump(
     __obj: dict[str, Any], __fp: BinaryIO, *, multiline_strings: bool = False
 ) -> None:
-    opts = Opts(multiline_strings)
-    for chunk in gen_table_chunks(__obj, opts, name=""):
+    ctx = Context(multiline_strings, {})
+    for chunk in gen_table_chunks(__obj, ctx, name=""):
         __fp.write(chunk.encode())
 
 
 def dumps(__obj: dict[str, Any], *, multiline_strings: bool = False) -> str:
-    opts = Opts(multiline_strings)
-    return "".join(gen_table_chunks(__obj, opts, name=""))
+    ctx = Context(multiline_strings, {})
+    return "".join(gen_table_chunks(__obj, ctx, name=""))
 
 
-class Opts(NamedTuple):
+class Context(NamedTuple):
     allow_multiline: bool
+    # cache rendered inline tables (mapping from object id to rendered inline table)
+    inline_table_cache: dict[int, str]
 
 
 def gen_table_chunks(
     table: Mapping[str, Any],
-    opts: Opts,
+    ctx: Context,
     *,
     name: str,
     inside_aot: bool = False,
@@ -56,7 +58,7 @@ def gen_table_chunks(
     for k, v in table.items():
         if isinstance(v, dict):
             tables.append((k, v, False))
-        elif is_aot(v) and not all(is_suitable_inline_table(t, opts) for t in v):
+        elif is_aot(v) and not all(is_suitable_inline_table(t, ctx) for t in v):
             tables.extend((k, t, True) for t in v)
         else:
             literals.append((k, v))
@@ -68,7 +70,7 @@ def gen_table_chunks(
     if literals:
         yielded = True
         for k, v in literals:
-            yield f"{format_key_part(k)} = {format_literal(v, opts)}\n"
+            yield f"{format_key_part(k)} = {format_literal(v, ctx)}\n"
 
     for k, v, in_aot in tables:
         if yielded:
@@ -77,10 +79,10 @@ def gen_table_chunks(
             yielded = True
         key_part = format_key_part(k)
         display_name = f"{name}.{key_part}" if name else key_part
-        yield from gen_table_chunks(v, opts, name=display_name, inside_aot=in_aot)
+        yield from gen_table_chunks(v, ctx, name=display_name, inside_aot=in_aot)
 
 
-def format_literal(obj: object, opts: Opts, *, nest_level: int = 0) -> str:
+def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
     if isinstance(obj, bool):
         return "true" if obj else "false"
     if isinstance(obj, (int, float, date, datetime)):
@@ -92,11 +94,11 @@ def format_literal(obj: object, opts: Opts, *, nest_level: int = 0) -> str:
             raise ValueError("TOML does not support offset times")
         return str(obj)
     if isinstance(obj, str):
-        return format_string(obj, allow_multiline=opts.allow_multiline)
+        return format_string(obj, allow_multiline=ctx.allow_multiline)
     if isinstance(obj, ARRAY_TYPES):
-        return format_inline_array(obj, opts, nest_level)
+        return format_inline_array(obj, ctx, nest_level)
     if isinstance(obj, dict):
-        return format_inline_table(obj, opts)
+        return format_inline_table(obj, ctx)
     raise TypeError(f"Object of type {type(obj)} is not TOML serializable")
 
 
@@ -110,19 +112,28 @@ def format_decimal(obj: Decimal) -> str:
     return str(obj)
 
 
-def format_inline_table(obj: dict, opts: Opts) -> str:
+def format_inline_table(obj: dict, ctx: Context) -> str:
+    # check cache first
+    obj_id = id(obj)
+    if obj_id in ctx.inline_table_cache:
+        return ctx.inline_table_cache[obj_id]
+
     if not obj:
-        return "{}"
-    return (
-        "{ "
-        + ", ".join(
-            f"{format_key_part(k)} = {format_literal(v, opts)}" for k, v in obj.items()
+        rendered = "{}"
+    else:
+        rendered = (
+            "{ "
+            + ", ".join(
+                f"{format_key_part(k)} = {format_literal(v, ctx)}"
+                for k, v in obj.items()
+            )
+            + " }"
         )
-        + " }"
-    )
+    ctx.inline_table_cache[obj_id] = rendered
+    return rendered
 
 
-def format_inline_array(obj: tuple | list, opts: Opts, nest_level: int) -> str:
+def format_inline_array(obj: tuple | list, ctx: Context, nest_level: int) -> str:
     if not obj:
         return "[]"
     item_indent = ARRAY_INDENT * (1 + nest_level)
@@ -130,7 +141,7 @@ def format_inline_array(obj: tuple | list, opts: Opts, nest_level: int) -> str:
     return (
         "[\n"
         + ",\n".join(
-            item_indent + format_literal(item, opts, nest_level=nest_level + 1)
+            item_indent + format_literal(item, ctx, nest_level=nest_level + 1)
             for item in obj
         )
         + f",\n{closing_bracket_indent}]"
@@ -174,24 +185,15 @@ def format_string(s: str, *, allow_multiline: bool) -> str:
 
 
 def is_aot(obj: Any) -> bool:
-    """Decides if object behaves as an array of tables (i.e. list of dicts).
-
-    See: https://toml.io/en/v1.0.0#array-of-tables.
-    """
+    """Decides if an object behaves as an array of tables (i.e. a nonempty list
+    of dicts)."""
     return bool(
         isinstance(obj, ARRAY_TYPES) and obj and all(isinstance(v, dict) for v in obj)
     )
 
 
-def is_suitable_inline_table(obj: dict, opts: Opts) -> bool:
-    """Uses heuristics to decide if the inline-style representation is a good
-    choice for a given dict.
-
-    For example, the spec strongly discourages inline tables that
-    contain line breaks. See: https://toml.io/en/v1.0.0#inline-table
-    """
-    if any(isinstance(v, ARRAY_TYPES + (dict,)) for v in obj.values()):
-        # Tomli-W will automatically introduce line breaks when converting lists.
-        # It also prefers to not have nested inline tables.
-        return False
-    return len(f"{ARRAY_INDENT}{format_inline_table(obj, opts)},") <= MAX_LINE_LENGTH
+def is_suitable_inline_table(obj: dict, ctx: Context) -> bool:
+    """Use heuristics to decide if the inline-style representation is a good
+    choice for a given table."""
+    rendered_inline = f"{ARRAY_INDENT}{format_inline_table(obj, ctx)},"
+    return len(rendered_inline) <= MAX_LINE_LENGTH and "\n" not in rendered_inline
