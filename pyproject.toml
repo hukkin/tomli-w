@@ -111,7 +111,7 @@ source = ['tomli_w']
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
-     # Re-enable the standard pragma (with extra strictness)
+    # Re-enable the standard pragma (with extra strictness)
     '# pragma: no cover\b',
     # Code for static type checkers
     'if TYPE_CHECKING:',
