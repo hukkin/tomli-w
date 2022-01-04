@@ -60,17 +60,10 @@ envlist = py{37,38,39,310}
 isolated_build = True
 
 [testenv:py{37,38,39,310}]
-description = run tests against unpackaged source
-skip_install = True
-deps = -r tests/requirements.txt
-commands =
-    pytest {posargs}
-
-[testenv:py{37,38,39,310}-package]
 description = run tests against a built package
 deps = -r tests/requirements.txt
 commands =
-    pytest --import-mode=append {posargs}
+    pytest {posargs}
 
 [testenv:pre-commit]
 description = run linters
@@ -100,7 +93,6 @@ commands =
 
 [testenv:profile]
 description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
-skip_install = True
 setenv =
     PROFILER_ITERATIONS=1000
 deps =
@@ -114,15 +106,15 @@ commands =
 
 [tool.coverage.run]
 branch = true
-omit = ["tests/*", "*/site-packages/*"]
+source = ['tomli_w']
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
-    # Have to re-enable the standard pragma
-    "pragma: no cover",
+    # Re-enable the standard pragma (with extra strictness)
+    '# pragma: no cover\b',
     # Code for static type checkers
-    "if TYPE_CHECKING:",
+    'if TYPE_CHECKING:',
     # Scripts
     'if __name__ == .__main__.:',
     # Unfinished implementations

@@ -50,9 +50,6 @@ jobs:
 
     - name: Test with pytest
       run: |
-        # Test the built package
-        pytest --import-mode=append
-        # Test and get coverage against unpackaged source
         pytest --cov --cov-fail-under=100
 
     - name: Report coverage
