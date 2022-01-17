@@ -17,7 +17,9 @@
   - [Write to file](#write-to-file)
 - [FAQ](#faq)
   - [Does Tomli-W sort the document?](#does-tomli-w-sort-the-document)
-  - [Does Tomli-W support writing documents with comments, custom whitespace, or other stylistic choices?](#does-tomli-w-support-writing-documents-with-comments-custom-whitespace-or-other-stylistic-choices)
+  - [Does Tomli-W support writing documents with comments or custom whitespace?](#does-tomli-w-support-writing-documents-with-comments-or-custom-whitespace)
+  - [Why does Tomli-W not write a multi-line string if the string value contains newlines?](#why-does-tomli-w-not-write-a-multi-line-string-if-the-string-value-contains-newlines)
+  - [Is Tomli-W output guaranteed to be valid TOML?](#is-tomli-w-output-guaranteed-to-be-valid-toml)
 
 <!-- mdformat-toc end -->
 
@@ -71,6 +73,47 @@ with open("path_to_file/conf.toml", "wb") as f:
 No, but it respects sort order of the input data,
 so one could sort the content of the `dict` (recursively) before calling `tomli_w.dumps`.
 
-### Does Tomli-W support writing documents with comments, custom whitespace, or other stylistic choices?<a name="does-tomli-w-support-writing-documents-with-comments-custom-whitespace-or-other-stylistic-choices"></a>
+### Does Tomli-W support writing documents with comments or custom whitespace?<a name="does-tomli-w-support-writing-documents-with-comments-or-custom-whitespace"></a>
 
 No.
+
+### Why does Tomli-W not write a multi-line string if the string value contains newlines?<a name="why-does-tomli-w-not-write-a-multi-line-string-if-the-string-value-contains-newlines"></a>
+
+This default was chosen to achieve lossless parse/write round-trips.
+
+TOML strings can contain newlines where exact bytes matter, e.g.
+
+```toml
+s = "here's a newline\r\n"
+```
+
+TOML strings also can contain newlines where exact byte representation is not relevant, e.g.
+
+```toml
+s = """here's a newline
+"""
+```
+
+A parse/write round-trip that converts the former example to the latter does not preserve the original newline byte sequence.
+This is why Tomli-W avoids writing multi-line strings.
+
+A keyword argument is provided for users who do not need newline bytes to be preserved:
+
+```python
+import tomli_w
+
+doc = {"s": "here's a newline\r\n"}
+expected_toml = '''\
+s = """
+here's a newline
+"""
+'''
+assert tomli_w.dumps(doc, multiline_strings=True) == expected_toml
+```
+
+### Is Tomli-W output guaranteed to be valid TOML?<a name="is-tomli-w-output-guaranteed-to-be-valid-toml"></a>
+
+No.
+If there's a chance that your input data is bad and you need output validation,
+parse the output string once with `tomli.loads`.
+If the parse is successful (does not raise `tomli.TOMLDecodeError`) then the string is valid TOML.

@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.0.0
+
+- Removed
+  - Support for Python 3.6
+  - Positional arguments of `dump` and `dumps` can no longer be passed by keyword.
+- Changed
+  - Revised logic for when the "Array of Tables" syntax will be used.
+    AoT syntax is used when at least one of the tables needs multiple lines, or a single line wider than 100 chars, when rendered inline.
+    A nested structure no longer alone triggers the AoT syntax.
+
+## 0.4.0
+
+- Added
+  - Support for formatting Python `tuple`s as TOML arrays.
+- Fixed
+  - Formatting of `decimal.Decimal("inf")`, `decimal.Decimal("-inf")` and `decimal.Decimal("nan")`.
+- Changed
+  - A list of dicts is now rendered using the "Array of Tables" syntax
+    if at least one of the tables is a nested structure,
+    or at least one of the tables would need a line wider than 100 chars when rendered inline.
+    Thank you [Anderson Bravalheri](https://github.com/abravalheri) for the
+    [PR](https://github.com/hukkin/tomli-w/pull/15).
+
 ## 0.3.0
 
 - Changed
