@@ -1,15 +1,14 @@
 [build-system]
-requires = ["flit_core>=3.2.0,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling~=0.8"]
+build-backend = "hatchling.build"
 
 [project]
 name = "tomli_w"
-version = "1.0.0"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 description = "A lil' TOML writer"
 authors = [
     { name = "Taneli Hukkinen", email = "hukkin@users.noreply.github.com" },
 ]
-license = { file = "LICENSE" }
+license = "MIT"
 requires-python = ">=3.7"
 readme = "README.md"
 classifiers = [
@@ -28,10 +27,28 @@ classifiers = [
     "Typing :: Typed",
 ]
 keywords = ["toml", "tomli"]
+dynamic = ["version"]
 
 [project.urls]
 "Homepage" = "https://github.com/hukkin/tomli-w"
 "Changelog" = "https://github.com/hukkin/tomli-w/blob/master/CHANGELOG.md"
+
+
+[tool.hatch.version]
+path = "src/tomli_w/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["/src/tomli_w"]
+zip-safe = false
+
+[tool.hatch.build.targets.wheel.hooks.mypyc]
+enable-by-default = false
+dependencies = ["hatch-mypyc>=0.5"]
+# Seems to be slightly faster in benchmark
+options = { separate = true }
 
 
 [tool.isort]
