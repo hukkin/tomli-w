@@ -43,3 +43,14 @@ def replace_nans(cont: Union[dict, list]) -> Union[dict, list]:
         elif isinstance(v, dict) or isinstance(v, list):
             cont[k] = replace_nans(cont[k])
     return cont
+
+
+@pytest.mark.parametrize(
+    "obj,expected_str,multiline_strings",
+    [
+        ({"cr-newline": "foo\rbar"}, 'cr-newline = "foo\\rbar"\n', True),
+        ({"crlf-newline": "foo\r\nbar"}, 'crlf-newline = """\nfoo\nbar"""\n', True),
+    ],
+)
+def test_obj_to_str_mapping(obj, expected_str, multiline_strings):
+    assert tomli_w.dumps(obj, multiline_strings=multiline_strings) == expected_str
