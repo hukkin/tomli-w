@@ -48,7 +48,7 @@ def replace_nans(cont: Union[dict, list]) -> Union[dict, list]:
 @pytest.mark.parametrize(
     "obj,expected_str,multiline_strings",
     [
-        ({"cr-newline": "foo\rbar"}, 'cr-newline = """\nfoo\nbar"""\n', True),
+        ({"cr-newline": "foo\rbar"}, 'cr-newline = "foo\\rbar"\n', True),
         ({"crlf-newline": "foo\r\nbar"}, 'crlf-newline = """\nfoo\nbar"""\n', True),
     ],
 )
