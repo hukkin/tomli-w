@@ -98,10 +98,10 @@ def test_array_of_tables_containing_lists():
     expected = """\
 [[aot]]
 a = [
-    0,
-    1,
-    2,
-    3,
+  0,
+  1,
+  2,
+  3,
 ]
 """
     actual = tomli_w.dumps(example)
@@ -112,10 +112,10 @@ a = [
     expected = """\
 [[a.nested.aot]]
 a = [
-    0,
-    1,
-    2,
-    3,
+  0,
+  1,
+  2,
+  3,
 ]
 """
     actual = tomli_w.dumps(example)
@@ -124,8 +124,8 @@ a = [
 
 def test_array_of_long_tables():
     long_dict = {
-        "long-value": "Lorem ipsum sith",
-        "another-long-value": "consectetur adipis",
+        "very-long-value": "Lorem ipsum sith",
+        "another-very-long-value": "consectetur adipis",
         "simple-value": 3,
     }
     example = {"table": {"nested-array": [{"a": 42}, long_dict]}}
@@ -134,13 +134,14 @@ def test_array_of_long_tables():
 a = 42
 
 [[table.nested-array]]
-long-value = "Lorem ipsum sith"
-another-long-value = "consectetur adipis"
+very-long-value = "Lorem ipsum sith"
+another-very-long-value = "consectetur adipis"
 simple-value = 3
 """
     actual = tomli_w.dumps(example)
     assert actual == expected
     assert tomli.loads(actual) == example
+
 
 
 def test_array_of_short_tables():
@@ -149,9 +150,9 @@ def test_array_of_short_tables():
     expected = f"""\
 [table]
 nested-array = [
-    {{ {long_name} = 0 }},
-    {{ b = 1 }},
-    {{ c = 2 }},
+  {{ {long_name} = 0 }},
+  {{ b = 1 }},
+  {{ c = 2 }},
 ]
 """
     actual = tomli_w.dumps(example)
@@ -171,15 +172,15 @@ def test_example_issue_12():
     expected = """\
 [[table.nested_table]]
 array_options = [
-    1,
-    2,
-    3,
+  1,
+  2,
+  3,
 ]
 
 [[table.nested_table]]
 another_array = [
-    1,
-    2,
+  1,
+  2,
 ]
 
 [[table.nested_table]]
@@ -223,8 +224,8 @@ def test_non_trivial_nesting():
 
 [[table.aot.nested-table.nested_aot]]
 a = [
-    0,
-    1,
+  0,
+  1,
 ]
 
 [[table.aot.nested-table.nested_aot]]
@@ -239,7 +240,7 @@ c = 3
 d = 4
 e = 5
 f = [
-    { g = 6 },
+  { g = 6 },
 ]
 
 [[table.aot.other-nested-table.h]]
@@ -268,7 +269,7 @@ line2"""
         tomli_w.dumps(data, multiline_strings=False)
         == """\
 aot = [
-    { multiline_string = "line1\\nline2" },
+  { multiline_string = "line1\\nline2" },
 ]
 """
     )

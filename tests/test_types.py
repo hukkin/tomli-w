@@ -30,11 +30,11 @@ def test_tuple():
         == """\
 empty-tuple = []
 non-empty-tuple = [
-    1,
-    [
-        2,
-        3,
-    ],
+  1,
+  [
+    2,
+    3,
+  ],
 ]
 """
     )
