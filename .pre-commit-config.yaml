@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/executablebooks/mdformat
-  rev: 0c0af8f5055b092cc0ffb90e20ae4a03af3a0e8a  # frozen: 0.7.11
+  rev: b8c05ae822d53326e967da45367d0408afc56a81  # frozen: 0.7.14
   hooks:
   - id: mdformat
     additional_dependencies:
@@ -20,7 +20,7 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: f1d4e742c91dd5179d742b0db9293c4472b765f8  # frozen: 21.12b0
+  rev: ae2c0758c9e61a385df9700dc9c231bf54887041  # frozen: 22.3.0
   hooks:
   - id: black
 - repo: https://github.com/myint/docformatter
@@ -28,7 +28,7 @@ repos:
   hooks:
   - id: docformatter
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 8fe62d14e0b4d7d845a7022c5c2c3ae41bdd3f26  # frozen: v4.1.0
+  rev: db7346d375eda68a0174f2c057dd97f2fbffe030  # frozen: v4.2.0
   hooks:
   - id: check-yaml
 - repo: https://github.com/pre-commit/pygrep-hooks
@@ -46,7 +46,7 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: 886e1c39f0dcddeee1cd260418372cf5f3932391  # frozen: v0.930
+  rev: a04404bdf52c2cbc9c5bd705454b89bd83b84383  # frozen: v0.950
   hooks:
   - id: mypy
     args: ["--scripts-are-modules"]
