@@ -5,7 +5,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import Any, BinaryIO, NamedTuple
+from typing import IO, Any, NamedTuple
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -27,7 +27,7 @@ COMPACT_ESCAPES = MappingProxyType(
 
 
 def dump(
-    __obj: dict[str, Any], __fp: BinaryIO, *, multiline_strings: bool = False
+    __obj: dict[str, Any], __fp: IO[bytes], *, multiline_strings: bool = False
 ) -> None:
     ctx = Context(multiline_strings, {})
     for chunk in gen_table_chunks(__obj, ctx, name=""):
