@@ -5,7 +5,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 import string
 from types import MappingProxyType
-from typing import IO, Any, NamedTuple, Collection
+from typing import IO, Any, Collection, NamedTuple
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -187,7 +187,10 @@ def is_aot(obj: Any) -> bool:
     """Decides if an object behaves as an array of tables (i.e. a nonempty list
     of dicts)."""
     return bool(
-        isinstance(obj, Collection) and not isinstance(obj, str) and obj and all(isinstance(v, Mapping) for v in obj)
+        isinstance(obj, Collection)
+        and not isinstance(obj, str)
+        and obj
+        and all(isinstance(v, Mapping) for v in obj)
     )
 
 
