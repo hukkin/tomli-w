@@ -29,6 +29,14 @@ classifiers = [
 ]
 keywords = ["toml", "tomli"]
 
+[project.optional-dependencies]
+test = [
+    'pytest',
+    'pytest-randomly',
+    'pytest-cov >=2.12.1',
+    'tomli'
+]
+
 [project.urls]
 "Homepage" = "https://github.com/hukkin/tomli-w"
 "Changelog" = "https://github.com/hukkin/tomli-w/blob/master/CHANGELOG.md"
