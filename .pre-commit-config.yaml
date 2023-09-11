@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/executablebooks/mdformat
-  rev: b8c05ae822d53326e967da45367d0408afc56a81  # frozen: 0.7.14
+  rev: 08fba30538869a440b5059de90af03e3502e35fb  # frozen: 0.7.17
   hooks:
   - id: mdformat
     additional_dependencies:
@@ -8,7 +8,7 @@ repos:
     - mdformat-gfm
     - mdformat-black
 - repo: https://github.com/asottile/yesqa
-  rev: 35cf7dc24fa922927caded7a21b2a8cb04bf8e10  # frozen: v1.3.0
+  rev: f2ae90cf9e1661ade79d0881186ce4fd7ba6ee79  # frozen: v1.5.0
   hooks:
   - id: yesqa
     additional_dependencies:
@@ -16,29 +16,29 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/PyCQA/isort
-  rev: c5e8fa75dda5f764d20f66a215d71c21cfa198e1  # frozen: 5.10.1
+  rev: dbf82f2dd09ae41d9355bcd7ab69187a19e6bf2f  # frozen: 5.12.0
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: ae2c0758c9e61a385df9700dc9c231bf54887041  # frozen: 22.3.0
+  rev: e87737140f32d3cd7c44ede75f02dcd58e55820e  # frozen: 23.9.1
   hooks:
   - id: black
-- repo: https://github.com/myint/docformatter
-  rev: 67919ee01837761f2d954d7fbb08c12cdd38ec5a  # frozen: v1.4
+- repo: https://github.com/PyCQA/docformatter
+  rev: dfefe062799848234b4cd60b04aa633c0608025e  # frozen: v1.7.5
   hooks:
   - id: docformatter
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: db7346d375eda68a0174f2c057dd97f2fbffe030  # frozen: v4.2.0
+  rev: f71fa2c1f9cf5cb705f73dffe4b21f7c61470ba9  # frozen: v4.4.0
   hooks:
   - id: check-yaml
 - repo: https://github.com/pre-commit/pygrep-hooks
-  rev: 6f51a66bba59954917140ec2eeeaa4d5e630e6ce  # frozen: v1.9.0
+  rev: 3a6eb0fadf60b3cccfd80bad9dbb6fae7e47b316  # frozen: v1.10.0
   hooks:
   - id: python-use-type-annotations
   - id: python-check-blanket-noqa
   - id: python-check-blanket-type-ignore
 - repo: https://github.com/PyCQA/flake8
-  rev: cbeb4c9c4137cff1568659fcc48e8b85cddd0c8d  # frozen: 4.0.1
+  rev: 10f4af6dbcf93456ba7df762278ae61ba3120dc6  # frozen: 6.1.0
   hooks:
   - id: flake8
     additional_dependencies:
@@ -46,7 +46,7 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: a04404bdf52c2cbc9c5bd705454b89bd83b84383  # frozen: v0.950
+  rev: 08cbc46b6e135adec84911b20e98e5bc52032152  # frozen: v1.5.1
   hooks:
   - id: mypy
     args: ["--scripts-are-modules"]
