@@ -27,14 +27,14 @@ COMPACT_ESCAPES = MappingProxyType(
 
 
 def dump(
-    __obj: dict[str, Any], __fp: IO[bytes], *, multiline_strings: bool = False
+    __obj: Mapping[str, Any], __fp: IO[bytes], *, multiline_strings: bool = False
 ) -> None:
     ctx = Context(multiline_strings, {})
     for chunk in gen_table_chunks(__obj, ctx, name=""):
         __fp.write(chunk.encode())
 
 
-def dumps(__obj: dict[str, Any], *, multiline_strings: bool = False) -> str:
+def dumps(__obj: Mapping[str, Any], *, multiline_strings: bool = False) -> str:
     ctx = Context(multiline_strings, {})
     return "".join(gen_table_chunks(__obj, ctx, name=""))
 
@@ -56,7 +56,7 @@ def gen_table_chunks(
     literals = []
     tables: list[tuple[str, Any, bool]] = []  # => [(key, value, inside_aot)]
     for k, v in table.items():
-        if isinstance(v, dict):
+        if isinstance(v, Mapping):
             tables.append((k, v, False))
         elif is_aot(v) and not all(is_suitable_inline_table(t, ctx) for t in v):
             tables.extend((k, t, True) for t in v)
@@ -97,7 +97,7 @@ def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
         return format_string(obj, allow_multiline=ctx.allow_multiline)
     if isinstance(obj, ARRAY_TYPES):
         return format_inline_array(obj, ctx, nest_level)
-    if isinstance(obj, dict):
+    if isinstance(obj, Mapping):
         return format_inline_table(obj, ctx)
     raise TypeError(f"Object of type {type(obj)} is not TOML serializable")
 
@@ -112,7 +112,7 @@ def format_decimal(obj: Decimal) -> str:
     return str(obj)
 
 
-def format_inline_table(obj: dict, ctx: Context) -> str:
+def format_inline_table(obj: Mapping, ctx: Context) -> str:
     # check cache first
     obj_id = id(obj)
     if obj_id in ctx.inline_table_cache:
@@ -188,11 +188,11 @@ def is_aot(obj: Any) -> bool:
     """Decides if an object behaves as an array of tables (i.e. a nonempty list
     of dicts)."""
     return bool(
-        isinstance(obj, ARRAY_TYPES) and obj and all(isinstance(v, dict) for v in obj)
+        isinstance(obj, ARRAY_TYPES) and obj and all(isinstance(v, Mapping) for v in obj)
     )
 
 
-def is_suitable_inline_table(obj: dict, ctx: Context) -> bool:
+def is_suitable_inline_table(obj: Mapping, ctx: Context) -> bool:
     """Use heuristics to decide if the inline-style representation is a good
     choice for a given table."""
     rendered_inline = f"{ARRAY_INDENT}{format_inline_table(obj, ctx)},"
