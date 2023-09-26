@@ -11,7 +11,7 @@ ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
 ARRAY_TYPES = (list, tuple)
-ARRAY_INDENT = " " * 4
+ARRAY_INDENT = " " * 2
 MAX_LINE_LENGTH = 100
 
 COMPACT_ESCAPES = MappingProxyType(
