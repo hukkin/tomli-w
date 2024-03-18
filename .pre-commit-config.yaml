@@ -16,11 +16,11 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/PyCQA/isort
-  rev: dbf82f2dd09ae41d9355bcd7ab69187a19e6bf2f  # frozen: 5.12.0
+  rev: c235f5e450b4b84e58d114ed4c589cbf454175a3  # frozen: 5.13.2
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: e87737140f32d3cd7c44ede75f02dcd58e55820e  # frozen: 23.9.1
+  rev: 552baf822992936134cbd31a38f69c8cfe7c0f05  # frozen: 24.3.0
   hooks:
   - id: black
 - repo: https://github.com/PyCQA/docformatter
@@ -28,7 +28,7 @@ repos:
   hooks:
   - id: docformatter
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: f71fa2c1f9cf5cb705f73dffe4b21f7c61470ba9  # frozen: v4.4.0
+  rev: c4a0b883114b00d8d76b479c820ce7950211c99b  # frozen: v4.5.0
   hooks:
   - id: check-yaml
 - repo: https://github.com/pre-commit/pygrep-hooks
@@ -38,7 +38,7 @@ repos:
   - id: python-check-blanket-noqa
   - id: python-check-blanket-type-ignore
 - repo: https://github.com/PyCQA/flake8
-  rev: 10f4af6dbcf93456ba7df762278ae61ba3120dc6  # frozen: 6.1.0
+  rev: 7d37d9032d0d161634be4554273c30efd4dea0b3  # frozen: 7.0.0
   hooks:
   - id: flake8
     additional_dependencies:
@@ -46,7 +46,7 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: 08cbc46b6e135adec84911b20e98e5bc52032152  # frozen: v1.5.1
+  rev: 9db9854e3041219b1eb619872a2dfaf58adfb20b  # frozen: v1.9.0
   hooks:
   - id: mypy
     args: ["--scripts-are-modules"]
