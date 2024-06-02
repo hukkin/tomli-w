@@ -11,7 +11,6 @@ ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
 BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
 ARRAY_TYPES = (list, tuple)
-ARRAY_INDENT = " " * 4
 MAX_LINE_LENGTH = 100
 
 COMPACT_ESCAPES = MappingProxyType(
@@ -27,15 +26,15 @@ COMPACT_ESCAPES = MappingProxyType(
 
 
 def dump(
-    __obj: dict[str, Any], __fp: IO[bytes], *, multiline_strings: bool = False
+    __obj: dict[str, Any], __fp: IO[bytes], *, multiline_strings: bool = False, indent: int = 4,
 ) -> None:
-    ctx = Context(multiline_strings, {})
+    ctx = Context(multiline_strings, {}, indent)
     for chunk in gen_table_chunks(__obj, ctx, name=""):
         __fp.write(chunk.encode())
 
 
-def dumps(__obj: dict[str, Any], *, multiline_strings: bool = False) -> str:
-    ctx = Context(multiline_strings, {})
+def dumps(__obj: dict[str, Any], *, multiline_strings: bool = False, indent: int = 4) -> str:
+    ctx = Context(multiline_strings, {}, indent)
     return "".join(gen_table_chunks(__obj, ctx, name=""))
 
 
@@ -43,6 +42,7 @@ class Context(NamedTuple):
     allow_multiline: bool
     # cache rendered inline tables (mapping from object id to rendered inline table)
     inline_table_cache: dict[int, str]
+    indent: int = 4
 
 
 def gen_table_chunks(
@@ -136,8 +136,8 @@ def format_inline_table(obj: dict, ctx: Context) -> str:
 def format_inline_array(obj: tuple | list, ctx: Context, nest_level: int) -> str:
     if not obj:
         return "[]"
-    item_indent = ARRAY_INDENT * (1 + nest_level)
-    closing_bracket_indent = ARRAY_INDENT * nest_level
+    item_indent = " " * ctx.indent * (1 + nest_level)
+    closing_bracket_indent = " " * ctx.indent * nest_level
     return (
         "[\n"
         + ",\n".join(
@@ -195,5 +195,5 @@ def is_aot(obj: Any) -> bool:
 def is_suitable_inline_table(obj: dict, ctx: Context) -> bool:
     """Use heuristics to decide if the inline-style representation is a good
     choice for a given table."""
-    rendered_inline = f"{ARRAY_INDENT}{format_inline_table(obj, ctx)},"
+    rendered_inline = f"{' ' * ctx.indent}{format_inline_table(obj, ctx)},"
     return len(rendered_inline) <= MAX_LINE_LENGTH and "\n" not in rendered_inline
