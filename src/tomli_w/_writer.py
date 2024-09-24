@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Generator, Mapping
 from datetime import date, datetime, time
 from decimal import Decimal
+from pathlib import Path
 import string
 from types import MappingProxyType
 from typing import IO, Any, NamedTuple
@@ -99,6 +100,8 @@ def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
         return format_inline_array(obj, ctx, nest_level)
     if isinstance(obj, Mapping):
         return format_inline_table(obj, ctx)
+    if isinstance(obj, Path):
+        return str(obj)
     raise TypeError(f"Object of type {type(obj)} is not TOML serializable")
 
 
