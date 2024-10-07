@@ -6,6 +6,7 @@ environment. To get and read profiler results:
   - `tox -e profile`
   - `firefox .tox/prof/combined.svg`
 """
+
 import os
 from pathlib import Path
 
