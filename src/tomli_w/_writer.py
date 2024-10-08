@@ -40,7 +40,7 @@ def dump(
 def dumps(
     __obj: Mapping[str, Any], *, multiline_strings: bool = False, indent: int = 4
 ) -> str:
-    ctx = Context(multiline_strings, {}, indent)
+    ctx = Context(multiline_strings, {}, " " * indent)
     return "".join(gen_table_chunks(__obj, ctx, name=""))
 
 
