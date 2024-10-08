@@ -49,55 +49,60 @@ xfail_strict = true
 
 
 [tool.tox]
-legacy_tox_ini = '''
-[tox]
+requires = ["tox>=4.21.1"]
 # Only run pytest envs when no args given to tox
-envlist = py{39,310,311,312}
-isolated_build = True
+env_list = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
-[testenv:py{39,310,311,312}]
-description = run tests against a built package
-deps = -r tests/requirements.txt
-commands =
-    pytest {posargs}
+[tool.tox.env_run_base]
+description = "run tests against a built package under {base_python}"
+deps = [
+    "-r tests/requirements.txt",
+]
+commands = [
+    ["pytest", { replace = "posargs", extend = true }],
+]
 
-[testenv:pre-commit]
-description = run linters
-skip_install = True
-deps = pre-commit
-commands = pre-commit run {posargs:--all}
+[tool.tox.env."pre-commit"]
+description = "run linters"
+skip_install = true
+deps = ["pre-commit"]
+commands = [
+    ["pre-commit", "run", { replace = "posargs", default = ["--all"], extend = true }],
+]
 
-[testenv:benchmark]
-description = run the benchmark script against a local Tomli-W version
-deps =
-    -r benchmark/requirements.txt
-commands =
-    python -c 'import datetime; print(datetime.date.today())'
-    python --version
-    python benchmark/run.py
+[tool.tox.env."benchmark"]
+description = "run the benchmark script against a local Tomli-W version"
+deps = ["-r benchmark/requirements.txt"]
+commands = [
+    ["python", "-c", "import datetime; print(datetime.date.today())"],
+    ["python", "--version"],
+    ["python", "benchmark/run.py"],
+]
 
-[testenv:benchmark-pypi]
-description = run the benchmark script against the latest Tomli-W in PyPI
-skip_install = True
-deps =
-    tomli-w
-    -r benchmark/requirements.txt
-commands =
-    python -c 'import datetime; print(datetime.date.today())'
-    python --version
-    python benchmark/run.py
+[tool.tox.env."benchmark-pypi"]
+description = "run the benchmark script against the latest Tomli-W in PyPI"
+skip_install = true
+deps = [
+    "tomli-w",
+    "-r benchmark/requirements.txt",
+]
+commands = [
+    ["python", "-c", "import datetime; print(datetime.date.today())"],
+    ["python", "--version"],
+    ["python", "benchmark/run.py"],
+]
 
-[testenv:profile]
-description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
-setenv =
-    PROFILER_ITERATIONS=1000
-deps =
-    -r tests/requirements.txt
-    pytest-profiling
-commands =
-    pytest tests/test_for_profiler.py --profile-svg --pstats-dir "{toxworkdir}/prof"
-    python -c 'import pathlib; print("profiler svg output under file://\{0\}".format(pathlib.Path(r"{toxworkdir}") / "prof" / "combined.svg"))'
-'''
+[tool.tox.env."profile"]
+description = "run profiler (use e.g. `firefox .tox/prof/output.svg` to open)"
+setenv = { "PROFILER_ITERATIONS" = "1000" }
+deps = [
+    "-r tests/requirements.txt",
+    "pytest-profiling",
+]
+commands = [
+    ["pytest", "tests/test_for_profiler.py", "--profile-svg", "--pstats-dir", "{toxworkdir}/prof"],
+    ["python", "-c", 'import pathlib; print("profiler svg output under file://\{0\}".format(pathlib.Path(r"{toxworkdir}") / "prof" / "combined.svg"))'],
+]
 
 
 [tool.coverage.run]
