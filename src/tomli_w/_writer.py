@@ -25,6 +25,19 @@ COMPACT_ESCAPES = MappingProxyType(
 )
 
 
+class Context(NamedTuple):
+    allow_multiline: bool
+    # cache rendered inline tables (mapping from object id to rendered inline table)
+    inline_table_cache: dict[int, str]
+    indent_str: str
+
+
+def make_context(multiline_strings: bool, indent: int) -> Context:
+    if indent < 0:
+        raise ValueError("Indent width must be non-negative")
+    return Context(multiline_strings, {}, " " * indent)
+
+
 def dump(
     obj: Mapping[str, Any],
     fp: IO[bytes],
@@ -33,7 +46,7 @@ def dump(
     multiline_strings: bool = False,
     indent: int = 4,
 ) -> None:
-    ctx = Context(multiline_strings, {}, " " * indent)
+    ctx = make_context(multiline_strings, indent)
     for chunk in gen_table_chunks(obj, ctx, name=""):
         fp.write(chunk.encode())
 
@@ -41,15 +54,8 @@ def dump(
 def dumps(
     obj: Mapping[str, Any], /, *, multiline_strings: bool = False, indent: int = 4
 ) -> str:
-    ctx = Context(multiline_strings, {}, " " * indent)
+    ctx = make_context(multiline_strings, indent)
     return "".join(gen_table_chunks(obj, ctx, name=""))
-
-
-class Context(NamedTuple):
-    allow_multiline: bool
-    # cache rendered inline tables (mapping from object id to rendered inline table)
-    inline_table_cache: dict[int, str]
-    indent_str: str
 
 
 def gen_table_chunks(

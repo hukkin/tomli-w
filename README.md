@@ -17,7 +17,8 @@
   - [Write to file](#write-to-file)
 - [FAQ](#faq)
   - [Does Tomli-W sort the document?](#does-tomli-w-sort-the-document)
-  - [Does Tomli-W support writing documents with comments or custom whitespace?](#does-tomli-w-support-writing-documents-with-comments-or-custom-whitespace)
+  - [Does Tomli-W support writing documents with comments?](#does-tomli-w-support-writing-documents-with-comments)
+  - [Can I customize insignificant whitespace?](#can-i-customize-insignificant-whitespace)
   - [Why does Tomli-W not write a multi-line string if the string value contains newlines?](#why-does-tomli-w-not-write-a-multi-line-string-if-the-string-value-contains-newlines)
   - [Is Tomli-W output guaranteed to be valid TOML?](#is-tomli-w-output-guaranteed-to-be-valid-toml)
 
@@ -73,9 +74,28 @@ with open("path_to_file/conf.toml", "wb") as f:
 No, but it respects sort order of the input data,
 so one could sort the content of the `dict` (recursively) before calling `tomli_w.dumps`.
 
-### Does Tomli-W support writing documents with comments or custom whitespace?<a name="does-tomli-w-support-writing-documents-with-comments-or-custom-whitespace"></a>
+### Does Tomli-W support writing documents with comments?<a name="does-tomli-w-support-writing-documents-with-comments"></a>
 
 No.
+
+### Can I customize insignificant whitespace?<a name="can-i-customize-insignificant-whitespace"></a>
+
+Indent width of array content can be configured via the `indent` keyword argument.
+`indent` takes a non-negative integer, defaulting to 4.
+
+```python
+import tomli_w
+
+doc = {"fruits": ["orange", "kiwi", "papaya"]}
+expected_toml = """\
+fruits = [
+ "orange",
+ "kiwi",
+ "papaya",
+]
+"""
+assert tomli_w.dumps(doc, indent=1) == expected_toml
+```
 
 ### Why does Tomli-W not write a multi-line string if the string value contains newlines?<a name="why-does-tomli-w-not-write-a-multi-line-string-if-the-string-value-contains-newlines"></a>
 
@@ -117,3 +137,11 @@ No.
 If there's a chance that your input data is bad and you need output validation,
 parse the output string once with `tomli.loads`.
 If the parse is successful (does not raise `tomli.TOMLDecodeError`) then the string is valid TOML.
+
+Examples of bad input data that can lead to writing invalid TOML without an error being raised include:
+
+- A mapping where keys behave very much like strings, but aren't. E.g. a tuple of strings of length 1.
+- A mapping where a value is a subclass of a supported type, but which overrides the `__str__` method.
+
+Given proper input (a mapping consisting of non-subclassed [types returned by Tomli](https://github.com/hukkin/tomli?tab=readme-ov-file#how-do-toml-types-map-into-python-types))
+the output should be valid TOML.
