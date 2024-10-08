@@ -143,7 +143,7 @@ def format_inline_array(obj: tuple | list, ctx: Context, nest_level: int) -> str
     if not obj:
         return "[]"
     item_indent = ctx.indent_str * (1 + nest_level)
-    closing_bracket_indent = " " * ctx.indent * nest_level
+    closing_bracket_indent = ctx.indent_str * nest_level
     return (
         "[\n"
         + ",\n".join(
