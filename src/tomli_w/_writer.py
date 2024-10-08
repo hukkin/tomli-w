@@ -32,7 +32,7 @@ def dump(
     multiline_strings: bool = False,
     indent: int = 4,
 ) -> None:
-    ctx = Context(multiline_strings, {}, indent)
+    ctx = Context(multiline_strings, {}, " " * indent)
     for chunk in gen_table_chunks(__obj, ctx, name=""):
         __fp.write(chunk.encode())
 
