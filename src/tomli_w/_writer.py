@@ -48,7 +48,7 @@ class Context(NamedTuple):
     allow_multiline: bool
     # cache rendered inline tables (mapping from object id to rendered inline table)
     inline_table_cache: dict[int, str]
-    indent: int = 4
+    indent_str: str
 
 
 def gen_table_chunks(
