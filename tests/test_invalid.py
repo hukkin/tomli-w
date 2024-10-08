@@ -14,3 +14,8 @@ def test_invalid_time():
     offset_time = time(23, 59, 59, tzinfo=timezone.utc)
     with pytest.raises(ValueError):
         tomli_w.dumps({"offset time": offset_time})
+
+
+def test_negative_indent():
+    with pytest.raises(ValueError):
+        tomli_w.dumps({"k": "v"}, indent=-1)
