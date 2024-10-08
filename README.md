@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/hukkin/tomli-w/workflows/Tests/badge.svg?branch=master)](https://github.com/hukkin/tomli-w/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
+[![Build Status](https://github.com/hukkin/tomli-w/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/hukkin/tomli-w/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
 [![codecov.io](https://codecov.io/gh/hukkin/tomli-w/branch/master/graph/badge.svg)](https://codecov.io/gh/hukkin/tomli-w)
 [![PyPI version](https://img.shields.io/pypi/v/tomli-w)](https://pypi.org/project/tomli-w)
 
