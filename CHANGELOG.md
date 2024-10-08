@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.0
+
+- Removed
+  - Support for Python 3.7 and 3.8
+- Added
+  - Accept generic `collections.abc.Mapping`, not just `dict`, as input.
+    Thank you [Watal M. Iwasaki](https://github.com/heavywatal) for the
+    [PR](https://github.com/hukkin/tomli-w/pull/46).
+  - `indent` keyword argument for customizing indent width of arrays.
+    Thank you [Wim Jeantine-Glenn](https://github.com/wimglenn) for the
+    [PR](https://github.com/hukkin/tomli-w/pull/49).
+- Type annotations
+  - Type annotate `dump` function's output stream object as `typing.IO[bytes]` (previously `typing.BinaryIO`)
+
 ## 1.0.0
 
 - Removed
