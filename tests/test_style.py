@@ -272,3 +272,16 @@ aot = [
 ]
 """
     )
+
+
+def test_array_indent_override():
+    data = {"k0": ["v1", "v2"]}
+    assert (
+        tomli_w.dumps(data, indent=2)
+        == """\
+k0 = [
+  "v1",
+  "v2",
+]
+"""
+    )
