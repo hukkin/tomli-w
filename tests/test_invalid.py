@@ -19,3 +19,21 @@ def test_invalid_time():
 def test_negative_indent():
     with pytest.raises(ValueError):
         tomli_w.dumps({"k": "v"}, indent=-1)
+
+
+def test_invalid_key__falsy():
+    with pytest.raises(TypeError) as exc_info:
+        tomli_w.dumps({None: "v"})  # type: ignore[dict-item]
+    assert (
+        str(exc_info.value)
+        == "Invalid mapping key 'None' of type 'NoneType'. A string is required."
+    )
+
+
+def test_invalid_key__truthy():
+    with pytest.raises(TypeError) as exc_info:
+        tomli_w.dumps({2: "v"})  # type: ignore[dict-item]
+    assert (
+        str(exc_info.value)
+        == "Invalid mapping key '2' of type 'int'. A string is required."
+    )
