@@ -6,8 +6,9 @@ import tomli_w
 
 
 def test_invalid_type_nested():
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError) as exc_info:
         tomli_w.dumps({"bytearr": bytearray()})
+    assert str(exc_info.value) == "Object of type 'bytearray' is not TOML serializable"
 
 
 def test_invalid_time():
