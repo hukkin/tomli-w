@@ -3,13 +3,14 @@ from __future__ import annotations
 from collections.abc import Generator, Mapping
 from datetime import date, datetime, time
 from decimal import Decimal
-import string
 from types import MappingProxyType
 from typing import IO, Any, NamedTuple
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
-BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
+BARE_KEY_CHARS = frozenset(
+    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "-_"
+)
 ARRAY_TYPES = (list, tuple)
 MAX_LINE_LENGTH = 100
 
