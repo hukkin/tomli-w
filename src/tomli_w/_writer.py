@@ -34,10 +34,10 @@ class Context:
     def __init__(self, allow_multiline: bool, indent: int):
         if indent < 0:
             raise ValueError("Indent width must be non-negative")
-        self.allow_multiline: Final[bool] = allow_multiline
+        self.allow_multiline: Final = allow_multiline
         # cache rendered inline tables (mapping from object id to rendered inline table)
         self.inline_table_cache: Final[dict[int, str]] = {}
-        self.indent_str: Final[str] = " " * indent
+        self.indent_str: Final = " " * indent
 
 
 def dump(
