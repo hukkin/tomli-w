@@ -13,6 +13,7 @@ def test_decimal():
         "decimal-nan": Decimal("nan"),
         "decimal-2e3": Decimal("2e3"),
         "decimal-2E3": Decimal("2E3"),
+        "float-2E16": float("2E16"),
     }
     assert (
         tomli_w.dumps(obj)
@@ -23,8 +24,9 @@ decimal-pi = 3.14159
 decimal-inf = inf
 decimal-minus-inf = -inf
 decimal-nan = nan
-decimal-2e3 = 2E+3
-decimal-2E3 = 2E+3
+decimal-2e3 = 2e+3
+decimal-2E3 = 2e+3
+float-2E16 = 2e+16
 """
     )
 

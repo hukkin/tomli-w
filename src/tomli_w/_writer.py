@@ -125,8 +125,8 @@ def format_decimal(obj: Decimal) -> str:
         return "inf"
     if obj == Decimal("-inf"):
         return "-inf"
-    dec_str = str(obj)
-    return dec_str if "." in dec_str or "E" in dec_str else dec_str + ".0"
+    dec_str = str(obj).lower()
+    return dec_str if "." in dec_str or "e" in dec_str else dec_str + ".0"
 
 
 def format_inline_table(obj: Mapping, ctx: Context) -> str:
