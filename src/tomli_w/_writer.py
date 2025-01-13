@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Mapping
+from collections.abc import Mapping
 from datetime import date, datetime, time
 from decimal import Decimal
 from types import MappingProxyType
-from typing import IO, Any, NamedTuple
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from typing import IO, Any, Final
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 ILLEGAL_BASIC_STR_CHARS = frozenset('"\\') | ASCII_CTRL - frozenset("\t")
@@ -26,17 +30,14 @@ COMPACT_ESCAPES = MappingProxyType(
 )
 
 
-class Context(NamedTuple):
-    allow_multiline: bool
-    # cache rendered inline tables (mapping from object id to rendered inline table)
-    inline_table_cache: dict[int, str]
-    indent_str: str
-
-
-def make_context(multiline_strings: bool, indent: int) -> Context:
-    if indent < 0:
-        raise ValueError("Indent width must be non-negative")
-    return Context(multiline_strings, {}, " " * indent)
+class Context:
+    def __init__(self, allow_multiline: bool, indent: int):
+        if indent < 0:
+            raise ValueError("Indent width must be non-negative")
+        self.allow_multiline: Final[bool] = allow_multiline
+        # cache rendered inline tables (mapping from object id to rendered inline table)
+        self.inline_table_cache: Final[dict[int, str]] = {}
+        self.indent_str: Final[str] = " " * indent
 
 
 def dump(
@@ -47,7 +48,7 @@ def dump(
     multiline_strings: bool = False,
     indent: int = 4,
 ) -> None:
-    ctx = make_context(multiline_strings, indent)
+    ctx = Context(multiline_strings, indent)
     for chunk in gen_table_chunks(obj, ctx, name=""):
         fp.write(chunk.encode())
 
@@ -55,7 +56,7 @@ def dump(
 def dumps(
     obj: Mapping[str, Any], /, *, multiline_strings: bool = False, indent: int = 4
 ) -> str:
-    ctx = make_context(multiline_strings, indent)
+    ctx = Context(multiline_strings, indent)
     return "".join(gen_table_chunks(obj, ctx, name=""))
 
 
