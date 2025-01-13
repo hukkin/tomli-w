@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from datetime import date, datetime, time
-from decimal import Decimal
 from types import MappingProxyType
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:
     from collections.abc import Generator
+    from decimal import Decimal
     from typing import IO, Any, Final
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
@@ -102,8 +102,6 @@ def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
         return "true" if obj else "false"
     if isinstance(obj, (int, float, date, datetime)):
         return str(obj)
-    if isinstance(obj, Decimal):
-        return format_decimal(obj)
     if isinstance(obj, time):
         if obj.tzinfo:
             raise ValueError("TOML does not support offset times")
@@ -114,6 +112,12 @@ def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
         return format_inline_array(obj, ctx, nest_level)
     if isinstance(obj, Mapping):
         return format_inline_table(obj, ctx)
+
+    # Lazy import to improve module import time
+    from decimal import Decimal
+
+    if isinstance(obj, Decimal):
+        return format_decimal(obj)
     raise TypeError(
         f"Object of type '{type(obj).__qualname__}' is not TOML serializable"
     )
@@ -122,10 +126,8 @@ def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
 def format_decimal(obj: Decimal) -> str:
     if obj.is_nan():
         return "nan"
-    if obj == Decimal("inf"):
-        return "inf"
-    if obj == Decimal("-inf"):
-        return "-inf"
+    if obj.is_infinite():
+        return "-inf" if obj.is_signed() else "inf"
     dec_str = str(obj).lower()
     return dec_str if "." in dec_str or "e" in dec_str else dec_str + ".0"
 
