@@ -5,20 +5,28 @@ import tomli_w
 
 def test_decimal():
     obj = {
-        "decimal-0": Decimal(0),
+        "decimal-0": Decimal("0"),
+        "decimal-4": Decimal("4"),
         "decimal-pi": Decimal("3.14159"),
         "decimal-inf": Decimal("inf"),
         "decimal-minus-inf": Decimal("-inf"),
         "decimal-nan": Decimal("nan"),
+        "decimal-2e3": Decimal("2e3"),
+        "decimal-2E3": Decimal("2E3"),
+        "float-2E16": float("2E16"),
     }
     assert (
         tomli_w.dumps(obj)
         == """\
-decimal-0 = 0
+decimal-0 = 0.0
+decimal-4 = 4.0
 decimal-pi = 3.14159
 decimal-inf = inf
 decimal-minus-inf = -inf
 decimal-nan = nan
+decimal-2e3 = 2e+3
+decimal-2E3 = 2e+3
+float-2E16 = 2e+16
 """
     )
 
