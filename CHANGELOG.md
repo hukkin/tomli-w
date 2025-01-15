@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0
+
+- Added
+  - Always preserve `decimal.Decimal` type in parse round trips
+- Improved
+  - Better `TypeError` message on invalid mapping keys
+  - Unify type representation in error messages
+- Performance
+  - Improve import time by removing `typing` import
+  - Improve import time by removing `string` import
+  - Improve import time by lazy importing `decimal`
+
 ## 1.1.0
 
 - Removed
