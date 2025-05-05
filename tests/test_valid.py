@@ -1,12 +1,17 @@
 from decimal import Decimal
 from math import isnan
 from pathlib import Path
+import sys
 from typing import Union
 
 import pytest
-import tomli
 
 import tomli_w
+
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 
 COMPLIANCE_DIR = Path(__file__).parent / "data" / "toml-lang-compliance" / "valid"
 EXTRAS_DIR = Path(__file__).parent / "data" / "extras" / "valid"

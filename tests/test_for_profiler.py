@@ -9,10 +9,14 @@ environment. To get and read profiler results:
 
 import os
 from pathlib import Path
-
-import tomli
+import sys
 
 import tomli_w
+
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 
 path = Path(__file__).parent.parent / "benchmark" / "data.toml"
 benchmark_toml = path.read_bytes().decode()
