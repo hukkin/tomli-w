@@ -66,7 +66,7 @@ def gen_table_chunks(
     *,
     name: str,
     inside_aot: bool = False,
-) -> Generator[str, None, None]:
+) -> Generator[str]:
     yielded = False
     literals = []
     tables: list[tuple[str, Any, bool]] = []  # => [(key, value, inside_aot)]
