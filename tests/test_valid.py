@@ -2,7 +2,6 @@ from decimal import Decimal
 from math import isnan
 from pathlib import Path
 import sys
-from typing import Union
 
 import pytest
 
@@ -39,7 +38,7 @@ def test_valid(valid):
 NAN = object()
 
 
-def replace_nans(cont: Union[dict, list]) -> Union[dict, list]:
+def replace_nans(cont: dict | list) -> dict | list:
     """Replace NaNs with a sentinel object to fix the problem that NaN is not
     equal to another NaN."""
     for k, v in cont.items() if isinstance(cont, dict) else enumerate(cont):
