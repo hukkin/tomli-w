@@ -1,12 +1,16 @@
 from decimal import Decimal
 from math import isnan
 from pathlib import Path
-from typing import Union
+import sys
 
 import pytest
-import tomli
 
 import tomli_w
+
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 
 COMPLIANCE_DIR = Path(__file__).parent / "data" / "toml-lang-compliance" / "valid"
 EXTRAS_DIR = Path(__file__).parent / "data" / "extras" / "valid"
@@ -34,7 +38,7 @@ def test_valid(valid):
 NAN = object()
 
 
-def replace_nans(cont: Union[dict, list]) -> Union[dict, list]:
+def replace_nans(cont: dict | list) -> dict | list:
     """Replace NaNs with a sentinel object to fix the problem that NaN is not
     equal to another NaN."""
     for k, v in cont.items() if isinstance(cont, dict) else enumerate(cont):

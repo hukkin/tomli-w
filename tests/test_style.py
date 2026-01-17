@@ -1,6 +1,11 @@
-import tomli
+import sys
 
 import tomli_w
+
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 
 
 def test_newline_before_table():

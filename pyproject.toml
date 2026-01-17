@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core>=3.2.0,<4"]
+requires = ["flit_core>=3.11.0,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -9,11 +9,11 @@ description = "A lil' TOML writer"
 authors = [
     { name = "Taneli Hukkinen", email = "hukkin@users.noreply.github.com" },
 ]
-license = { file = "LICENSE" }
-requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
 readme = "README.md"
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
@@ -51,7 +51,7 @@ xfail_strict = true
 [tool.tox]
 requires = ["tox>=4.21.1"]
 # Only run pytest envs when no args given to tox
-env_list = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+env_list = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.tox.env_run_base]
 description = "run tests against a built package under {base_python}"
