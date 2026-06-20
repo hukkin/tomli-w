@@ -53,8 +53,21 @@ def replace_nans(cont: dict | list) -> dict | list:
     "obj,expected_str,multiline_strings",
     [
         ({"cr-newline": "foo\rbar"}, 'cr-newline = "foo\\rbar"\n', True),
-        ({"crlf-newline": "foo\r\nbar"}, 'crlf-newline = """\nfoo\nbar"""\n', True),
+        # A "\r\n" must keep its carriage return: it is escaped (as a lone
+        # "\r" already is above) rather than collapsed to a bare newline,
+        # which would drop the "\r" on read. See test_crlf_roundtrip below.
+        ({"crlf-newline": "foo\r\nbar"}, 'crlf-newline = """\nfoo\\r\nbar"""\n', True),
     ],
 )
 def test_obj_to_str_mapping(obj, expected_str, multiline_strings):
     assert tomli_w.dumps(obj, multiline_strings=multiline_strings) == expected_str
+
+
+@pytest.mark.parametrize("multiline_strings", [False, True])
+@pytest.mark.parametrize("value", ["x\r\ny", "a\r\nb\r\nc", "\r\n", "foo\r\n"])
+def test_crlf_roundtrip(value, multiline_strings):
+    # A carriage return must survive a dump/load round-trip in both modes;
+    # previously multiline_strings=True collapsed "\r\n" to "\n" and dropped
+    # the "\r".
+    dumped = tomli_w.dumps({"k": value}, multiline_strings=multiline_strings)
+    assert tomli.loads(dumped)["k"] == value
