@@ -186,7 +186,6 @@ def format_string(s: str, *, allow_multiline: bool) -> str:
     do_multiline = allow_multiline and "\n" in s
     if do_multiline:
         result = '"""\n'
-        s = s.replace("\r\n", "\n")
     else:
         result = '"'
 
