@@ -260,30 +260,22 @@ simple-value = 3
 
 def test_multiline_in_aot():
     data = {"aot": [{"multiline_string": "line1\nline2"}]}
-    assert (
-        tomli_w.dumps(data, multiline_strings=True)
-        == '''\
+    assert tomli_w.dumps(data, multiline_strings=True) == '''\
 [[aot]]
 multiline_string = """
 line1
 line2"""
 '''
-    )
-    assert (
-        tomli_w.dumps(data, multiline_strings=False)
-        == """\
+    assert tomli_w.dumps(data, multiline_strings=False) == """\
 aot = [
     { multiline_string = "line1\\nline2" },
 ]
 """
-    )
 
 
 def test_array_indent_override():
     data = {"k0": ["v1", "v2", ["v3", "v4"]]}
-    assert (
-        tomli_w.dumps(data, indent=2)
-        == """\
+    assert tomli_w.dumps(data, indent=2) == """\
 k0 = [
   "v1",
   "v2",
@@ -293,10 +285,7 @@ k0 = [
   ],
 ]
 """
-    )
-    assert (
-        tomli_w.dumps(data, indent=0)
-        == """\
+    assert tomli_w.dumps(data, indent=0) == """\
 k0 = [
 "v1",
 "v2",
@@ -306,4 +295,3 @@ k0 = [
 ],
 ]
 """
-    )

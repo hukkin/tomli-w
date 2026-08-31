@@ -16,11 +16,11 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/PyCQA/isort
-  rev: 0a09c783808cfe77bb3269250f663ff733d23302  # frozen: 7.0.0
+  rev: 131f4adcd5582bfc53928ab0d740eceb8b506b6c  # frozen: 9.0.1
   hooks:
   - id: isort
 - repo: https://github.com/psf/black-pre-commit-mirror
-  rev: 831207fd435b47aeffdf6af853097e64322b4d44  # frozen: 25.12.0
+  rev: 4160603246a6b365d4a2af661c6d71b0a0f50478  # frozen: 26.5.1
   hooks:
   - id: black
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -42,7 +42,7 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: a66e98df7b4aeeb3724184b332785976d062b92e  # frozen: v1.19.1
+  rev: 7ff8d35ae36a7d2b968f2f90b4c723e292e594ee  # frozen: v2.3.1
   hooks:
   - id: mypy
     args: ["--scripts-are-modules"]
