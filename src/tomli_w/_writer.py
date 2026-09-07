@@ -100,7 +100,9 @@ def gen_table_chunks(
 def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
     if isinstance(obj, bool):
         return "true" if obj else "false"
-    if isinstance(obj, (int, float, date, datetime)):
+    if isinstance(obj, datetime):
+        return format_datetime(obj)
+    if isinstance(obj, (int, float, date)):
         return str(obj)
     if isinstance(obj, time):
         if obj.tzinfo:
@@ -121,6 +123,15 @@ def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
     raise TypeError(
         f"Object of type '{type(obj).__qualname__}' is not TOML serializable"
     )
+
+
+def format_datetime(obj: datetime) -> str:
+    # A TOML offset is `HH:MM`, so an offset with seconds or microseconds
+    # cannot be written; `str()` would give e.g. `+00:19:32` (unparsable).
+    offset = obj.utcoffset()
+    if offset is not None and (offset.seconds % 60 or offset.microseconds):
+        raise ValueError("TOML does not support sub-minute UTC offsets")
+    return str(obj)
 
 
 def format_decimal(obj: Decimal) -> str:
