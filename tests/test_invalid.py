@@ -1,4 +1,4 @@
-from datetime import time, timezone
+from datetime import datetime, time, timedelta, timezone
 
 import pytest
 
@@ -15,6 +15,17 @@ def test_invalid_time():
     offset_time = time(23, 59, 59, tzinfo=timezone.utc)
     with pytest.raises(ValueError):
         tomli_w.dumps({"offset time": offset_time})
+
+
+def test_invalid_datetime_offset():
+    # TOML offsets are RFC 3339 `HH:MM`; a datetime whose UTC offset has a
+    # seconds or microseconds component would be written as unparsable TOML.
+    sub_minute_offset = timezone(timedelta(seconds=30))
+    with pytest.raises(ValueError):
+        tomli_w.dumps({"dt": datetime(2020, 1, 1, tzinfo=sub_minute_offset)})
+    sub_second_offset = timezone(timedelta(microseconds=1))
+    with pytest.raises(ValueError):
+        tomli_w.dumps({"dt": datetime(2020, 1, 1, tzinfo=sub_second_offset)})
 
 
 def test_negative_indent():
