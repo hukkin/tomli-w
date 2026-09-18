@@ -32,6 +32,11 @@ COMPACT_ESCAPES = MappingProxyType(
 
 class Context:
     def __init__(self, allow_multiline: bool, indent: int):
+        # bool is a subclass of int; reject it so indent=True is not width 1
+        if isinstance(indent, bool) or not isinstance(indent, int):
+            raise TypeError(
+                f"Indent width must be an integer, not {type(indent).__name__}"
+            )
         if indent < 0:
             raise ValueError("Indent width must be non-negative")
         self.allow_multiline: Final = allow_multiline
