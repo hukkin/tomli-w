@@ -103,7 +103,7 @@ def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
     if isinstance(obj, (int, float, date, datetime)):
         return str(obj)
     if isinstance(obj, time):
-        if obj.tzinfo:
+        if obj.utcoffset() is not None:
             raise ValueError("TOML does not support offset times")
         return str(obj)
     if isinstance(obj, str):
