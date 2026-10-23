@@ -35,8 +35,8 @@ class Context:
         if indent < 0:
             raise ValueError("Indent width must be non-negative")
         self.allow_multiline: Final = allow_multiline
-        # cache rendered inline tables (mapping from object id to rendered inline table)
-        self.inline_table_cache: Final[dict[int, str]] = {}
+        # Retain cached mappings so their object ids cannot be reused.
+        self.inline_table_cache: Final[dict[int, tuple[object, str]]] = {}
         self.indent_str: Final = " " * indent
 
 
@@ -135,8 +135,9 @@ def format_decimal(obj: Decimal) -> str:
 def format_inline_table(obj: Mapping, ctx: Context) -> str:
     # check cache first
     obj_id = id(obj)
-    if obj_id in ctx.inline_table_cache:
-        return ctx.inline_table_cache[obj_id]
+    cached = ctx.inline_table_cache.get(obj_id)
+    if cached is not None and cached[0] is obj:
+        return cached[1]
 
     if not obj:
         rendered = "{}"
@@ -149,7 +150,7 @@ def format_inline_table(obj: Mapping, ctx: Context) -> str:
             )
             + " }"
         )
-    ctx.inline_table_cache[obj_id] = rendered
+    ctx.inline_table_cache[obj_id] = (obj, rendered)
     return rendered
 
 

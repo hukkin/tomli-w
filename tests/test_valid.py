@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from decimal import Decimal
 from math import isnan
 from pathlib import Path
@@ -58,3 +59,20 @@ def replace_nans(cont: dict | list) -> dict | list:
 )
 def test_obj_to_str_mapping(obj, expected_str, multiline_strings):
     assert tomli_w.dumps(obj, multiline_strings=multiline_strings) == expected_str
+
+
+def test_inline_table_cache_does_not_reuse_dead_object_ids():
+    class EphemeralValues(Mapping):
+        def __len__(self):
+            return 3
+
+        def __iter__(self):
+            return iter(("0", "1", "2"))
+
+        def __getitem__(self, key):
+            return {"x": key}
+
+    doc = {"a": [EphemeralValues()]}
+    assert tomli_w.dumps(doc) == (
+        "a = [\n" '    { 0 = { x = "0" }, 1 = { x = "1" }, 2 = { x = "2" } },\n' "]\n"
+    )
