@@ -50,7 +50,14 @@ def dump(
 ) -> None:
     ctx = Context(multiline_strings, indent)
     for chunk in gen_table_chunks(obj, ctx, name=""):
-        fp.write(chunk.encode())
+        data = chunk.encode()
+        while data:
+            written = fp.write(data)
+            if written is None:
+                raise BlockingIOError("The binary stream could not accept more data")
+            if written <= 0:
+                raise OSError("The binary stream made no write progress")
+            data = data[written:]
 
 
 def dumps(
