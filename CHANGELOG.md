@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Changed
+  - Write datetimes with a `T` separator between the date and time, instead of a space.
+
 ## 1.2.0
 
 - Added

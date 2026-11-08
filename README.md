@@ -67,6 +67,10 @@ with open("path_to_file/conf.toml", "wb") as f:
     tomli_w.dump(doc, f)
 ```
 
+Datetimes are written with a `T` separator between the date and time,
+for example `2026-11-04T15:17:15` or `2026-11-04T15:17:15+00:00`.
+UTC offsets and fractional seconds are preserved.
+
 ## FAQ<a name="faq"></a>
 
 ### Does Tomli-W sort the document?<a name="does-tomli-w-sort-the-document"></a>
