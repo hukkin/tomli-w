@@ -1,4 +1,8 @@
+from datetime import date, datetime, time, timedelta, timezone
+from io import BytesIO
 import sys
+
+import pytest
 
 import tomli_w
 
@@ -6,6 +10,49 @@ if sys.version_info >= (3, 11):
     import tomllib as tomli
 else:
     import tomli
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        (datetime(2026, 11, 4, 15, 17, 15), "2026-11-04T15:17:15"),
+        (datetime(2026, 11, 4, 15, 17, 15, 123), "2026-11-04T15:17:15.000123"),
+        (
+            datetime(2026, 11, 4, 15, 17, 15, tzinfo=timezone.utc),
+            "2026-11-04T15:17:15+00:00",
+        ),
+        (
+            datetime(
+                2026,
+                11,
+                4,
+                15,
+                17,
+                15,
+                tzinfo=timezone(timedelta(hours=-3, minutes=-30)),
+            ),
+            "2026-11-04T15:17:15-03:30",
+        ),
+    ],
+)
+@pytest.mark.parametrize("write_file", [False, True])
+def test_datetime_delimiter(value, expected, write_file):
+    data = {"value": value}
+    if write_file:
+        output = BytesIO()
+        tomli_w.dump(data, output)
+        actual = output.getvalue().decode()
+    else:
+        actual = tomli_w.dumps(data)
+    assert actual == f"value = {expected}\n"
+    assert tomli.loads(actual) == data
+
+
+def test_date_and_time_formatting():
+    data = {"date": date(2026, 11, 4), "time": time(15, 17, 15, 123)}
+    actual = tomli_w.dumps(data)
+    assert actual == "date = 2026-11-04\ntime = 15:17:15.000123\n"
+    assert tomli.loads(actual) == data
 
 
 def test_newline_before_table():
