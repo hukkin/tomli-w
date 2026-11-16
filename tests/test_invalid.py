@@ -42,9 +42,9 @@ def test_invalid_key__truthy():
 
 def test_bool_indent():
     with pytest.raises(TypeError, match="Indent width must be an integer"):
-        tomli_w.dumps({"k": "v"}, indent=True)  # type: ignore[arg-type]
+        tomli_w.dumps({"k": "v"}, indent=True)
     with pytest.raises(TypeError, match="Indent width must be an integer"):
-        tomli_w.dumps({"k": "v"}, indent=False)  # type: ignore[arg-type]
+        tomli_w.dumps({"k": "v"}, indent=False)
 
 
 def test_non_int_indent():
