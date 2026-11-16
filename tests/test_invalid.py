@@ -38,3 +38,15 @@ def test_invalid_key__truthy():
         str(exc_info.value)
         == "Invalid mapping key '2' of type 'int'. A string is required."
     )
+
+
+def test_bool_indent():
+    with pytest.raises(TypeError, match="Indent width must be an integer"):
+        tomli_w.dumps({"k": "v"}, indent=True)
+    with pytest.raises(TypeError, match="Indent width must be an integer"):
+        tomli_w.dumps({"k": "v"}, indent=False)
+
+
+def test_non_int_indent():
+    with pytest.raises(TypeError, match="Indent width must be an integer"):
+        tomli_w.dumps({"k": "v"}, indent=1.5)  # type: ignore[arg-type]
