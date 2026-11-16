@@ -15,9 +15,7 @@ def test_decimal():
         "decimal-2E3": Decimal("2E3"),
         "float-2E16": float("2E16"),
     }
-    assert (
-        tomli_w.dumps(obj)
-        == """\
+    assert tomli_w.dumps(obj) == """\
 decimal-0 = 0.0
 decimal-4 = 4.0
 decimal-pi = 3.14159
@@ -28,14 +26,11 @@ decimal-2e3 = 2e+3
 decimal-2E3 = 2e+3
 float-2E16 = 2e+16
 """
-    )
 
 
 def test_tuple():
     obj = {"empty-tuple": (), "non-empty-tuple": (1, (2, 3))}
-    assert (
-        tomli_w.dumps(obj)
-        == """\
+    assert tomli_w.dumps(obj) == """\
 empty-tuple = []
 non-empty-tuple = [
     1,
@@ -45,4 +40,3 @@ non-empty-tuple = [
     ],
 ]
 """
-    )
