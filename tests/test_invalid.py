@@ -1,4 +1,4 @@
-from datetime import time, timezone
+from datetime import datetime, time, timedelta, timezone
 
 import pytest
 
@@ -15,6 +15,12 @@ def test_invalid_time():
     offset_time = time(23, 59, 59, tzinfo=timezone.utc)
     with pytest.raises(ValueError):
         tomli_w.dumps({"offset time": offset_time})
+
+
+def test_invalid_datetime__sub_minute_offset():
+    offset = timezone(timedelta(hours=5, minutes=53, seconds=28))
+    with pytest.raises(ValueError):
+        tomli_w.dumps({"lmt": datetime(1850, 1, 1, tzinfo=offset)})
 
 
 def test_negative_indent():

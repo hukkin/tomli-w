@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from types import MappingProxyType
 
 TYPE_CHECKING = False
@@ -100,7 +100,12 @@ def gen_table_chunks(
 def format_literal(obj: object, ctx: Context, *, nest_level: int = 0) -> str:
     if isinstance(obj, bool):
         return "true" if obj else "false"
-    if isinstance(obj, (int, float, date, datetime)):
+    if isinstance(obj, datetime):
+        offset = obj.utcoffset()
+        if offset is not None and offset % timedelta(minutes=1):
+            raise ValueError("TOML does not support sub-minute UTC offsets")
+        return str(obj)
+    if isinstance(obj, (int, float, date)):
         return str(obj)
     if isinstance(obj, time):
         if obj.tzinfo:
