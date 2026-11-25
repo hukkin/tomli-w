@@ -1,6 +1,24 @@
-from decimal import Decimal
+from decimal import Decimal, localcontext
+
+import pytest
 
 import tomli_w
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("1.234567890123456789", "1.234567890123456789"),
+        ("-0", "-0.0"),
+        ("1E+1000", "1e+1000"),
+    ],
+)
+def test_decimal_ignores_context_precision(value, expected):
+    number = Decimal(value)
+    with localcontext() as context:
+        context.prec = 2
+        actual = tomli_w.dumps({"value": number})
+    assert actual == f"value = {expected}\n"
 
 
 def test_decimal():
