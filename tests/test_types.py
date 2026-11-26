@@ -1,6 +1,13 @@
+from datetime import date, datetime, time, timezone
 from decimal import Decimal
+import sys
 
 import tomli_w
+
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 
 
 def test_decimal():
@@ -46,3 +53,29 @@ non-empty-tuple = [
 ]
 """
     )
+
+
+def test_datetime_isoformat_delimiter():
+    """Datetime values should use the interoperable ISO 8601 T separator."""
+    obj = {
+        "naive": datetime(2026, 11, 4, 15, 17, 15, 838800),
+        "utc": datetime(2026, 11, 4, 15, 17, 15, tzinfo=timezone.utc),
+        "date": date(2026, 11, 4),
+        "time": time(15, 17, 15),
+    }
+    rendered = tomli_w.dumps(obj)
+    assert (
+        rendered
+        == """\
+naive = 2026-11-04T15:17:15.838800
+utc = 2026-11-04T15:17:15+00:00
+date = 2026-11-04
+time = 15:17:15
+"""
+    )
+    assert tomli.loads(rendered) == {
+        "naive": datetime(2026, 11, 4, 15, 17, 15, 838800),
+        "utc": datetime(2026, 11, 4, 15, 17, 15, tzinfo=timezone.utc),
+        "date": date(2026, 11, 4),
+        "time": time(15, 17, 15),
+    }
